@@ -8,36 +8,90 @@ import generateOTP from '../../../util/generateOTP';
 import { IUser } from './user.interface';
 import { User } from './user.model';
 import { USER_ROLES } from './user.constant';
+import { CompanyServices } from '../company/company.service';
+import mongoose from 'mongoose';
+import { Company } from '../company/company.model';
 
-const createOwnerToDB = async (payload: Partial<IUser>): Promise<IUser> => {
-  // check if company already exist
-  // const isCompanyExist = await 
-  
-  //set role
-  payload.role = USER_ROLES.OWNER;
-  const createUser = await User.create(payload);
+const createOwnerToDB = async (
+  payload: Partial<IUser> & {
+    companyName: string;
+    businessCategory: string;
+    website: string;
+  }
+) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  //send email
-  const otp = generateOTP();
-  const values = {
-    name: createUser.firstName,
-    otp: otp,
-    email: createUser.email!,
-  };
-  const createAccountTemplate = emailTemplate.createAccount(values);
-  emailHelper.sendEmail(createAccountTemplate);
+  try {
+    const { companyName, businessCategory, website, ...userPayload } = payload;
 
-  //save to DB
-  const authentication = {
-    oneTimeCode: otp,
-    expireAt: new Date(Date.now() + 3 * 60000),
-  };
-  await User.findOneAndUpdate(
-    { _id: createUser._id },
-    { $set: { authentication } }
-  );
+    // 1. Create company
+    // check if the company already exists
+    const existingCompany = await Company.findOne({
+      name: payload.companyName,
+    });
+    if (existingCompany) {
+      throw new ApiError(StatusCodes.CONFLICT, 'Company already exists');
+    }
 
-  return createUser;
+    const [newCompany] = await Company.create(
+      [
+        {
+          name: companyName,
+          category: businessCategory,
+          website,
+        },
+      ],
+      { session }
+    );
+
+    // 2. Create user with role=OWNER
+    const [createUser] = await User.create(
+      [
+        {
+          ...userPayload,
+          role: USER_ROLES.OWNER,
+          company: newCompany._id,
+        },
+      ],
+      { session }
+    );
+
+    // 3. Generate OTP and prepare email
+    const otp = generateOTP();
+    const values = {
+      name: createUser.firstName,
+      otp: otp,
+      email: createUser.email!,
+    };
+    const createAccountTemplate = emailTemplate.createAccount(values);
+
+    // send the email AFTER commit.
+
+    // 4. Save authentication info
+    const authentication = {
+      oneTimeCode: otp,
+      expireAt: new Date(Date.now() + 3 * 60000), // expires in 3 min
+    };
+    await User.findByIdAndUpdate(
+      createUser._id,
+      { $set: { authentication } },
+      { session }
+    );
+
+    // 5. Commit transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    // Send email after commit (so DB is consistent even if email fails)
+    emailHelper.sendEmail(createAccountTemplate);
+
+    return null;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 };
 
 const getUserProfileFromDB = async (

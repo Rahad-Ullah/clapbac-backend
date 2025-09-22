@@ -27,7 +27,7 @@ router
   .route('/create-owner')
   .post(
     validateRequest(UserValidation.createOwnerZodSchema),
-    UserController.createUser
+    UserController.createOwner
   );
 
 export const UserRoutes = router;

@@ -5,7 +5,7 @@ import { getSingleFilePath } from '../../../shared/getFilePath';
 import sendResponse from '../../../shared/sendResponse';
 import { UserService } from './user.service';
 
-const createUser = catchAsync(
+const createOwner = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { ...userData } = req.body;
     const result = await UserService.createOwnerToDB(userData);
@@ -13,7 +13,8 @@ const createUser = catchAsync(
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
-      message: 'User created successfully',
+      message:
+        'Account created successfully. Please check your email to verify.',
       data: result,
     });
   }
@@ -52,4 +53,4 @@ const updateProfile = catchAsync(
   }
 );
 
-export const UserController = { createUser, getUserProfile, updateProfile };
+export const UserController = { createOwner, getUserProfile, updateProfile };
