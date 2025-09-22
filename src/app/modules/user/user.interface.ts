@@ -1,16 +1,23 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { USER_ROLES, USER_STATUS } from './user.constant';
 
 export type IUser = {
-  name: string;
-  role: USER_ROLES;
-  contact: string;
+  _id?: Types.ObjectId;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
-  location: string;
+  role: USER_ROLES;
+  phone: string;
+  username?: string;
   image?: string;
+  company?: Types.ObjectId;
+  title?: string;
   status: USER_STATUS;
   isVerified: boolean;
+  isDeleted: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
   authentication?: {
     isResetPassword: boolean;
     oneTimeCode: number;

@@ -1,10 +1,11 @@
 export enum USER_ROLES {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  ADMIN = 'ADMIN',
-  USER = 'USER',
+  SUPER_ADMIN = 'Super Admin',
+  ADMIN = 'Admin',
+  USER = 'User',
+  OWNER = 'Owner',
 }
 
 export enum USER_STATUS {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
+  ACTIVE = 'Active',
+  INACTIVE = 'Inactive',
 }

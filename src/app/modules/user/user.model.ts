@@ -8,13 +8,12 @@ import { USER_ROLES, USER_STATUS } from './user.constant';
 
 const userSchema = new Schema<IUser, UserModal>(
   {
-    name: {
+    firstName: {
       type: String,
       required: true,
     },
-    role: {
+    lastName: {
       type: String,
-      enum: Object.values(USER_ROLES),
       required: true,
     },
     email: {
@@ -29,9 +28,31 @@ const userSchema = new Schema<IUser, UserModal>(
       select: 0,
       minlength: 8,
     },
+    role: {
+      type: String,
+      enum: Object.values(USER_ROLES),
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     image: {
       type: String,
-      default: 'https://i.ibb.co/z5YHLV9/profile.png',
+      default: '',
+    },
+    company: {
+      type: Schema.Types.ObjectId,
+      ref: 'Company',
+    },
+    title: {
+      type: String,
+      default: '',
     },
     status: {
       type: String,
@@ -39,6 +60,10 @@ const userSchema = new Schema<IUser, UserModal>(
       default: USER_STATUS.ACTIVE,
     },
     isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isDeleted: {
       type: Boolean,
       default: false,
     },
@@ -88,6 +113,14 @@ userSchema.pre('save', async function (next) {
   const isExist = await User.findOne({ email: this.email });
   if (isExist) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Email already exist!');
+  }
+
+  // generate username
+  if (!this.username) {
+    const usersLength = await User.countDocuments();
+
+    let base = this.email.split('@')[0]; // e.g., "john.doe"
+    this.username = `${base}${usersLength + 1}`;
   }
 
   //password hash
