@@ -4,10 +4,12 @@ import config from '../config';
 import { logger } from '../shared/logger';
 
 const payload = {
-  name: 'Administrator',
+  firstName: 'Super',
+  lastName: 'Admin',
   email: config.super_admin.email,
   role: USER_ROLES.SUPER_ADMIN,
   password: config.super_admin.password,
+  phone: '+8801712345678',
   isVerified: true,
 };
 

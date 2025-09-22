@@ -9,18 +9,18 @@ import { IUser } from './user.interface';
 import { User } from './user.model';
 import { USER_ROLES } from './user.constant';
 
-const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
+const createOwnerToDB = async (payload: Partial<IUser>): Promise<IUser> => {
+  // check if company already exist
+  // const isCompanyExist = await 
+  
   //set role
-  payload.role = USER_ROLES.USER;
+  payload.role = USER_ROLES.OWNER;
   const createUser = await User.create(payload);
-  if (!createUser) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create user');
-  }
 
   //send email
   const otp = generateOTP();
   const values = {
-    name: createUser.name,
+    name: createUser.firstName,
     otp: otp,
     email: createUser.email!,
   };
@@ -75,7 +75,7 @@ const updateProfileToDB = async (
 };
 
 export const UserService = {
-  createUserToDB,
+  createOwnerToDB,
   getUserProfileFromDB,
   updateProfileToDB,
 };

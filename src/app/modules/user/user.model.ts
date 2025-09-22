@@ -39,7 +39,7 @@ const userSchema = new Schema<IUser, UserModal>(
     },
     username: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
     },
     image: {
@@ -118,9 +118,7 @@ userSchema.pre('save', async function (next) {
   // generate username
   if (!this.username) {
     const usersLength = await User.countDocuments();
-
-    let base = this.email.split('@')[0]; // e.g., "john.doe"
-    this.username = `${base}${usersLength + 1}`;
+    this.username = `${this.firstName.toLowerCase()+this.lastName.toLowerCase()}${usersLength + 1}`;
   }
 
   //password hash

@@ -19,11 +19,20 @@ const createOwnerZodSchema = z.object({
       .string({ required_error: 'Phone is required' })
       .min(10, 'Phone must be at least 10 characters long')
       .max(15, 'Phone must be at most 15 characters long'),
-    company: z.string({ required_error: 'Company is required' }).nonempty('Company cannot be empty'),
-    category: z.string({ required_error: 'Category is required' }).nonempty('Category cannot be empty'),
-    title: z.string({ required_error: 'Title is required' }).nonempty('Title cannot be empty'),
-    website: z.string().url('Invalid website URL').nonempty('Website cannot be empty'),
-  }),
+    companyName: z
+      .string({ required_error: 'Company name is required' })
+      .nonempty('Company name cannot be empty'),
+    businessCategory: z
+      .string({ required_error: 'Business category is required' })
+      .nonempty('Business category cannot be empty'),
+    title: z
+      .string({ required_error: 'Title is required' })
+      .nonempty('Title cannot be empty'),
+    website: z
+      .string()
+      .url('Invalid website URL')
+      .nonempty('Website cannot be empty'),
+  }).strict(),
 });
 
 const updateOwnerZodSchema = z.object({
@@ -35,7 +44,7 @@ const updateOwnerZodSchema = z.object({
   image: z.string().optional(),
   role: z.nativeEnum(USER_ROLES).optional(),
   status: z.nativeEnum(USER_STATUS).optional(),
-});
+}).strict();
 
 export const UserValidation = {
   createOwnerZodSchema,
