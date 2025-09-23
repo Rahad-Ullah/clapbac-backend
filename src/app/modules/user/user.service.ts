@@ -58,7 +58,7 @@ const createOwnerToDB = async (
     );
 
     // 3. Generate OTP and prepare email
-    const otp = generateOTP();
+    const otp = generateOTP(6);
     const values = {
       name: createUser.firstName,
       otp: otp,

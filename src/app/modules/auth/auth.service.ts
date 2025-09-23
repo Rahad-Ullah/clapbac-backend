@@ -26,7 +26,7 @@ const loginUserFromDB = async (payload: ILoginData) => {
     throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   }
 
-  //check verified and status
+  //check verified status
   if (!isExistUser.isVerified) {
     throw new ApiError(
       StatusCodes.BAD_REQUEST,
@@ -43,10 +43,7 @@ const loginUserFromDB = async (payload: ILoginData) => {
   }
 
   //check match password
-  if (
-    password &&
-    !(await User.isMatchPassword(password, isExistUser.password))
-  ) {
+  if (!(await User.isMatchPassword(password, isExistUser.password))) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Password is incorrect!');
   }
 
@@ -68,7 +65,7 @@ const forgetPasswordToDB = async (email: string) => {
   }
 
   //send mail
-  const otp = generateOTP();
+  const otp = generateOTP(6);
   const value = {
     otp,
     email: isExistUser.email,
