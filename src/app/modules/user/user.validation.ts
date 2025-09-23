@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { USER_ROLES, USER_STATUS } from './user.constant';
 
 const createOwnerZodSchema = z.object({
   body: z
@@ -15,7 +14,7 @@ const createOwnerZodSchema = z.object({
         .email('Invalid email'),
       password: z
         .string({ required_error: 'Password is required' })
-        .min(8, 'Password must be at least 8 characters long'),
+        .nonempty('Password cannot be empty'),
       phone: z
         .string({ required_error: 'Phone is required' })
         .min(10, 'Phone must be at least 10 characters long')
@@ -33,21 +32,23 @@ const createOwnerZodSchema = z.object({
         .string({ required_error: 'Website is required' })
         .nonempty('Website cannot be empty'),
     })
-    .strict(),
+    .strict('Unnecessary fields are not allowed'),
 });
 
-const updateUserZodSchema = z
-  .object({
-    name: z.string().optional(),
-    contact: z.string().optional(),
-    email: z.string().optional(),
-    password: z.string().optional(),
-    location: z.string().optional(),
-    image: z.string().optional(),
-    role: z.nativeEnum(USER_ROLES).optional(),
-    status: z.nativeEnum(USER_STATUS).optional(),
-  })
-  .strict();
+const updateUserZodSchema = z.object({
+  body: z
+    .object({
+      firstName: z.string().nonempty('First name cannot be empty').optional(),
+      lastName: z.string().nonempty('Last name cannot be empty').optional(),
+      phone: z
+        .string()
+        .min(10, 'Phone must be at least 10 characters long')
+        .max(15, 'Phone must be at most 15 characters long')
+        .optional(),
+      title: z.string().nonempty('Title cannot be empty').optional(),
+    })
+    .strict('Unnecessary fields are not allowed'),
+});
 
 export const UserValidation = {
   createOwnerZodSchema,
