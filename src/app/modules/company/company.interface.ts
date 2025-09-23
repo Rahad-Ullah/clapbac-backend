@@ -10,7 +10,7 @@ export type ICompany = {
   website: string;
   email: string;
   phone: string;
-  author: Types.ObjectId;
+  owner: Types.ObjectId;
   reviewCount?: number;
   avgRating?: number;
   createdAt?: Date;

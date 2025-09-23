@@ -36,18 +36,20 @@ const createOwnerZodSchema = z.object({
     .strict(),
 });
 
-const updateOwnerZodSchema = z.object({
-  name: z.string().optional(),
-  contact: z.string().optional(),
-  email: z.string().optional(),
-  password: z.string().optional(),
-  location: z.string().optional(),
-  image: z.string().optional(),
-  role: z.nativeEnum(USER_ROLES).optional(),
-  status: z.nativeEnum(USER_STATUS).optional(),
-}).strict();
+const updateUserZodSchema = z
+  .object({
+    name: z.string().optional(),
+    contact: z.string().optional(),
+    email: z.string().optional(),
+    password: z.string().optional(),
+    location: z.string().optional(),
+    image: z.string().optional(),
+    role: z.nativeEnum(USER_ROLES).optional(),
+    status: z.nativeEnum(USER_STATUS).optional(),
+  })
+  .strict();
 
 export const UserValidation = {
   createOwnerZodSchema,
-  updateOwnerZodSchema,
+  updateUserZodSchema,
 };

@@ -57,7 +57,11 @@ const createOwnerToDB = async (
       { session }
     );
 
-    // 3. Generate OTP and prepare email
+    // 3. Update company with owner
+    newCompany.owner = createUser._id;
+    await newCompany.save({ session });
+
+    // 4. Generate OTP and prepare email
     const otp = generateOTP(6);
     const values = {
       name: createUser.firstName,
@@ -68,7 +72,7 @@ const createOwnerToDB = async (
 
     // send the email AFTER commit.
 
-    // 4. Save authentication info
+    // 5. Save authentication info
     const authentication = {
       oneTimeCode: otp,
       expireAt: new Date(Date.now() + 3 * 60000), // expires in 3 min
@@ -79,7 +83,7 @@ const createOwnerToDB = async (
       { session }
     );
 
-    // 5. Commit transaction
+    // 6. Commit transaction
     await session.commitTransaction();
     session.endSession();
 

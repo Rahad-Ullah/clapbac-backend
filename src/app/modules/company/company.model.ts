@@ -35,7 +35,7 @@ const companySchema = new Schema<ICompany, CompanyModel>(
       type: String,
       default: '',
     },
-    author: {
+    owner: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: false,
