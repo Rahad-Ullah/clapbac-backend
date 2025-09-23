@@ -1,17 +1,32 @@
 import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
-import { CompanyModel, ICompany } from './company.interface';
+import { ICompany } from './company.interface';
 import { Company } from './company.model';
 
-// create company service
-const createCompany = async (payload: Partial<ICompany>) => {
-  // check if the company already exists
-  const existingCompany = await Company.findOne({ name: payload.name });
-  if (existingCompany) {
-    throw new ApiError(StatusCodes.CONFLICT, 'Company already exists');
+// update company service
+const updateCompany = async (
+  id: string,
+  payload: Partial<ICompany>,
+  userId: string
+) => {
+  // check if the company exists
+  const existingCompany = await Company.findById(id);
+  if (!existingCompany) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Company not found!');
   }
-  const result = await Company.create(payload);
-  return result;
+  // check if the user owns the company
+  if (existingCompany.owner.toString() !== userId) {
+    throw new ApiError(
+      StatusCodes.FORBIDDEN,
+      'You are not allowed to update this company!'
+    );
+  }
+
+  // update the company
+  const updatedCompany = await Company.findByIdAndUpdate(id, payload, {
+    new: true,
+  });
+  return updatedCompany;
 };
 
-export const CompanyServices = { createCompany };
+export const CompanyServices = { updateCompany };

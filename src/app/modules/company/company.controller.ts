@@ -1,4 +1,28 @@
 import { Request, Response, NextFunction } from 'express';
 import { CompanyServices } from './company.service';
+import catchAsync from '../../../shared/catchAsync';
+import sendResponse from '../../../shared/sendResponse';
+import { StatusCodes } from 'http-status-codes';
+import { getSingleFilePath } from '../../../shared/getFilePath';
 
-export const CompanyController = { };
+// update company
+const updateCompany = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const logo = getSingleFilePath(req.files, 'image');
+
+    const result = await CompanyServices.updateCompany(
+      req.params.id,
+      { ...req.body, logo },
+      req.user.id
+    );
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: 'Company updated successfully!',
+      data: result,
+    });
+  }
+);
+
+export const CompanyController = { updateCompany };
