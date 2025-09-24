@@ -20,18 +20,6 @@ const createOwner = catchAsync(
   }
 );
 
-const getUserProfile = catchAsync(async (req: Request, res: Response) => {
-  const user = req.user;
-  const result = await UserService.getUserProfileFromDB(user);
-
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: 'Profile data retrieved successfully',
-    data: result,
-  });
-});
-
 //update profile
 const updateProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -53,6 +41,32 @@ const updateProfile = catchAsync(
   }
 );
 
+// get user profile
+const getUserProfile = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user;
+  const result = await UserService.getUserProfileFromDB(user);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Profile data retrieved successfully',
+    data: result,
+  });
+});
+
+// get single user by id
+const getUserById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await UserService.getUserByIdFromDB(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'User data retrieved successfully',
+    data: result,
+  });
+});
+
 // get all users
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const result = await UserService.getAllUsersFromDB(req.query);
@@ -66,4 +80,4 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const UserController = { createOwner, getUserProfile, updateProfile, getAllUsers };
+export const UserController = { createOwner, updateProfile, getUserProfile, getUserById, getAllUsers };

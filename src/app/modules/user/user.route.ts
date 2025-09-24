@@ -17,12 +17,16 @@ router.patch(
   UserController.updateProfile
 );
 
+// create business owner
 router
   .route('/create-owner')
   .post(
     validateRequest(UserValidation.createOwnerZodSchema),
     UserController.createOwner
   );
+
+// get single user by id
+router.get('/:id', auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), UserController.getUserById);
 
 // get all users
 router.get('/', auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), UserController.getAllUsers);

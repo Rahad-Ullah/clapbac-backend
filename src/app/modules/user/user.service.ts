@@ -7,7 +7,7 @@ import unlinkFile from '../../../shared/unlinkFile';
 import generateOTP from '../../../util/generateOTP';
 import { IUser } from './user.interface';
 import { User } from './user.model';
-import { USER_ROLES } from './user.constant';
+import { USER_ROLES, USER_STATUS } from './user.constant';
 import { CompanyServices } from '../company/company.service';
 import mongoose from 'mongoose';
 import { Company } from '../company/company.model';
@@ -99,18 +99,6 @@ const createOwnerToDB = async (
   }
 };
 
-const getUserProfileFromDB = async (
-  user: JwtPayload
-): Promise<Partial<IUser>> => {
-  const { id } = user;
-  const isExistUser = await User.isExistUserById(id);
-  if (!isExistUser) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
-  }
-
-  return isExistUser;
-};
-
 const updateProfileToDB = async (
   user: JwtPayload,
   payload: Partial<IUser>
@@ -133,10 +121,43 @@ const updateProfileToDB = async (
   return updateDoc;
 };
 
+// -------- get user profile --------
+const getUserProfileFromDB = async (
+  user: JwtPayload
+): Promise<Partial<IUser>> => {
+  const { id } = user;
+  // check user exist
+  const isExistUser = await User.findById(id);
+  if (!isExistUser) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+  }
+
+  // check if user is deleted
+  if (isExistUser.isDeleted) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Your account is deleted!');
+  }
+
+  // check user is banned
+  if (isExistUser.status === USER_STATUS.BANNED) {
+    throw new ApiError(
+      StatusCodes.FORBIDDEN,
+      'Your account has been suspended. Please contact support.'
+    );
+  }
+
+  return isExistUser;
+};
+
+// get user by id
+const getUserByIdFromDB = async (id: string): Promise<Partial<IUser>> => {
+  const isExistUser = await User.isExistUserById(id);
+  return isExistUser;
+};
+
 // -------- get all users with pagination --------
 const getAllUsersFromDB = async (query: Record<string, unknown>) => {
   const userQuery = new QueryBuilder(
-    User.find({ isDeleted: false, role: { $ne: USER_ROLES.SUPER_ADMIN } }),
+    User.find({ isDeleted: false, role: { $ne: USER_ROLES.SUPER_ADMIN } }).populate('company'),
     query
   )
     .search(['firstName', 'lastName', 'email', 'phone', 'username'])
@@ -156,5 +177,6 @@ export const UserService = {
   createOwnerToDB,
   updateProfileToDB,
   getUserProfileFromDB,
+  getUserByIdFromDB,
   getAllUsersFromDB,
 };
