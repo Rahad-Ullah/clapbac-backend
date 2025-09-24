@@ -3,6 +3,7 @@ import { AuthRoutes } from '../app/modules/auth/auth.route';
 import { UserRoutes } from '../app/modules/user/user.route';
 import { CompanyRoutes } from '../app/modules/company/company.route';
 import { RecentCompaniesRoutes } from '../app/modules/recent-companies/recent-companies.route';
+import { CategoryRoutes } from '../app/modules/category/category.route';
 const router = express.Router();
 
 const apiRoutes = [
@@ -13,6 +14,10 @@ const apiRoutes = [
   {
     path: '/auth',
     route: AuthRoutes,
+  },
+  {
+    path: '/categories',
+    route: CategoryRoutes,
   },
   {
     path: '/companies',

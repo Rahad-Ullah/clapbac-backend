@@ -1,0 +1,26 @@
+import { Request, Response, NextFunction } from 'express';
+import { CategoryServices } from './category.service';
+import catchAsync from '../../../shared/catchAsync';
+import sendResponse from '../../../shared/sendResponse';
+import { getSingleFilePath } from '../../../shared/getFilePath';
+
+// create category controller
+const createCategory = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const icon = getSingleFilePath(req.files, 'image');
+
+    const result = await CategoryServices.createCategoryToDB({
+      ...req.body,
+      icon,
+    });
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Category created successfully',
+      data: result,
+    });
+  }
+);
+
+export const CategoryController = { createCategory };
