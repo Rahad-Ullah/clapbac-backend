@@ -54,6 +54,10 @@ const userSchema = new Schema<IUser, UserModal>(
       type: String,
       default: '',
     },
+    adminNotes: {
+      type: String,
+      default: '',
+    },
     status: {
       type: String,
       enum: Object.values(USER_STATUS),

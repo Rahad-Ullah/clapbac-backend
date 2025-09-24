@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { USER_STATUS } from './user.constant';
 
 const createOwnerZodSchema = z.object({
   body: z
@@ -46,6 +47,8 @@ const updateUserZodSchema = z.object({
         .max(15, 'Phone must be at most 15 characters long')
         .optional(),
       title: z.string().nonempty('Title cannot be empty').optional(),
+      status: z.nativeEnum(USER_STATUS).optional(),
+      adminNotes: z.string().optional(),
     })
     .strict('Unnecessary fields are not allowed'),
 });

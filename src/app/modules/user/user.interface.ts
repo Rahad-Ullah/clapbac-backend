@@ -13,6 +13,7 @@ export type IUser = {
   image?: string;
   company?: Types.ObjectId;
   title?: string;
+  adminNotes?: string;
   status: USER_STATUS;
   isVerified: boolean;
   isDeleted: boolean;

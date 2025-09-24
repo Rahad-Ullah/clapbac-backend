@@ -11,6 +11,7 @@ import { USER_ROLES } from './user.constant';
 import { CompanyServices } from '../company/company.service';
 import mongoose from 'mongoose';
 import { Company } from '../company/company.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createOwnerToDB = async (
   payload: Partial<IUser> & {
@@ -132,8 +133,28 @@ const updateProfileToDB = async (
   return updateDoc;
 };
 
+// -------- get all users with pagination --------
+const getAllUsersFromDB = async (query: Record<string, unknown>) => {
+  const userQuery = new QueryBuilder(
+    User.find({ isDeleted: false, role: { $ne: USER_ROLES.SUPER_ADMIN } }),
+    query
+  )
+    .search(['firstName', 'lastName', 'email', 'phone', 'username'])
+    .filter()
+    .paginate()
+    .sort();
+
+  const [users, pagination] = await Promise.all([
+    userQuery.modelQuery,
+    userQuery.getPaginationInfo(),
+  ]);
+
+  return { users, pagination };
+};
+
 export const UserService = {
   createOwnerToDB,
-  getUserProfileFromDB,
   updateProfileToDB,
+  getUserProfileFromDB,
+  getAllUsersFromDB,
 };
