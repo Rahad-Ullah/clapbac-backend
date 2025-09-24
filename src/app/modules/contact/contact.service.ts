@@ -11,4 +11,10 @@ const createUpdateContact = async (payload: IContact) => {
   return result;
 };
 
-export const ContactServices = { createUpdateContact };
+// get contact info
+const getContact = async () => {
+  const result = await Contact.findOne({});
+  return result;
+};
+
+export const ContactServices = { createUpdateContact, getContact };

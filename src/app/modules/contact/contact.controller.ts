@@ -18,4 +18,18 @@ const createUpdateContact = catchAsync(
   }
 );
 
-export const ContactController = { createUpdateContact };
+// get contact info
+const getContact = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await ContactServices.getContact();
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Contact info retrieved successfully',
+      data: result,
+    });
+  }
+);
+
+export const ContactController = { createUpdateContact, getContact };
