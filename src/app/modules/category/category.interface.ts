@@ -4,6 +4,7 @@ export type ICategory = {
   _id: Types.ObjectId;
   name: string;
   icon: string;
+  relatedTo: Types.ObjectId[];
   isDeleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;

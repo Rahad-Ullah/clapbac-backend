@@ -11,6 +11,9 @@ const createCategoryZodSchema = z.object({
         .string({ required_error: 'Icon image is required' })
         .nonempty('Icon image cannot be empty')
         .optional(),
+      relatedTo: z.array(z.string(), {
+        invalid_type_error: 'RelatedTo must be an array of category ids',
+      }).optional(),
     })
     .strict(),
 });
@@ -26,6 +29,11 @@ const updateCategoryZodSchema = z.object({
       image: z
         .string({ required_error: 'Icon image is required' })
         .nonempty('Icon image cannot be empty')
+        .optional(),
+      relatedTo: z
+        .array(z.string(), {
+          invalid_type_error: 'RelatedTo must be an array of category ids',
+        })
         .optional(),
     })
     .strict(),

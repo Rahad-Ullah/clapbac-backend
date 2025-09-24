@@ -26,6 +26,12 @@ router.patch(
   CategoryController.updateCategory
 );
 
+// get single category route
+router.get(
+  '/:id',
+  CategoryController.getSingleCategory
+);
+
 // get all categories route
 router.get(
   '/',

@@ -33,9 +33,21 @@ const updateCategoryToDB = async (id: string, payload: Partial<ICategory>) => {
   return result;
 };
 
+// get single category by id
+const getSingleCategoryById = async (id: string) => {
+  const result = await Category.findById(id).populate('relatedTo', 'name icon');
+  if (!result) {
+    throw new Error('Category not found');
+  }
+  return result;
+};
+
 // get all categories
 const getAllCategories = async (query: Record<string, unknown>) => {
-  const categoryQuery = new QueryBuilder(Category.find(), query)
+  const categoryQuery = new QueryBuilder(
+    Category.find().populate('relatedTo', 'name icon').lean(),
+    query
+  )
     .search(['name'])
     .sort();
 
@@ -46,5 +58,6 @@ const getAllCategories = async (query: Record<string, unknown>) => {
 export const CategoryServices = {
   createCategoryToDB,
   updateCategoryToDB,
+  getSingleCategoryById,
   getAllCategories,
 };
