@@ -5,6 +5,7 @@ import { CompanyRoutes } from '../app/modules/company/company.route';
 import { RecentCompaniesRoutes } from '../app/modules/recent-companies/recent-companies.route';
 import { CategoryRoutes } from '../app/modules/category/category.route';
 import { FaqRoutes } from '../app/modules/faq/faq.route';
+import { DisclaimerRoutes } from '../app/modules/disclaimer/disclaimer.route';
 const router = express.Router();
 
 const apiRoutes = [
@@ -31,6 +32,10 @@ const apiRoutes = [
   {
     path: '/faqs',
     route: FaqRoutes,
+  },
+  {
+    path: '/disclaimers',
+    route: DisclaimerRoutes,
   },
 ];
 
