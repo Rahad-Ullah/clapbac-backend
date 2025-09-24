@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
 import { ICompany } from './company.interface';
 import { Company } from './company.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 // update company service
 const updateCompany = async (
@@ -29,4 +30,20 @@ const updateCompany = async (
   return updatedCompany;
 };
 
-export const CompanyServices = { updateCompany };
+// get all companies with pagination and search
+const getAllCompanies = async (query: Record<string, unknown>) => {
+  const companyQuery = new QueryBuilder(Company.find(), query)
+    .search(['name'])
+    .filter()
+    .paginate()
+    .sort();
+
+  const [data, pagination] = await Promise.all([
+    companyQuery.modelQuery,
+    companyQuery.getPaginationInfo(),
+  ]);
+
+  return { data, pagination };
+};
+
+export const CompanyServices = { updateCompany, getAllCompanies };

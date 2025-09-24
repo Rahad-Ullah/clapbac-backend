@@ -48,6 +48,10 @@ const companySchema = new Schema<ICompany, CompanyModel>(
       type: Number,
       default: 0,
     },
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

@@ -25,4 +25,19 @@ const updateCompany = catchAsync(
   }
 );
 
-export const CompanyController = { updateCompany };
+// get all companies
+const getAllCompanies = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await CompanyServices.getAllCompanies(req.query);
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: 'Companies retrieved successfully!',
+      data: result.data,
+      pagination: result.pagination,
+    });
+  }
+);
+
+export const CompanyController = { updateCompany, getAllCompanies };

@@ -8,6 +8,7 @@ import fileUploadHandler from '../../middlewares/fileUploadHandler';
 
 const router = express.Router();
 
+// update company
 router.patch(
   '/:id',
   auth(USER_ROLES.OWNER),
@@ -15,5 +16,11 @@ router.patch(
   validateRequest(CompanyValidations.updateCompanyZodSchema),
   CompanyController.updateCompany
 ); 
+
+// get all companies
+router.get(
+  '/',
+  CompanyController.getAllCompanies
+);
 
 export const CompanyRoutes = router;

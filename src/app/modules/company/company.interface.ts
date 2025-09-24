@@ -13,6 +13,7 @@ export type ICompany = {
   owner: Types.ObjectId;
   reviewCount?: number;
   avgRating?: number;
+  isFeatured?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 };
