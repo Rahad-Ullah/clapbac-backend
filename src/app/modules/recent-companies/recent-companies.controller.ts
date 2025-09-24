@@ -21,4 +21,18 @@ const createRecentCompanies = catchAsync(
   }
 );
 
-export const RecentCompaniesController = { createRecentCompanies };
+// get user recent companies
+const getUserRecentCompanies = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await RecentCompaniesServices.getUserRecentCompanies(req.user.id);
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: 'User recent companies retrieved successfully!',
+      data: result,
+    });
+  }
+);
+
+export const RecentCompaniesController = { createRecentCompanies, getUserRecentCompanies };

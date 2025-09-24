@@ -12,12 +12,13 @@ const createRecentCompanies = async (
       throw new Error('Company not found');
     }
     
-  // check if recent companies already exists
-  const isExist = await RecentCompanies.findOne(payload);
-  if (isExist) {
-    const result = await RecentCompanies.findByIdAndUpdate(isExist._id, {}, { new: true });
-    return result;
-  }
+    // check if recent companies already exists
+    const isExist = await RecentCompanies.findOne(payload);
+    if (isExist) {
+        const result = await RecentCompanies.findByIdAndUpdate(isExist._id, {}, { new: true });
+        return result;
+    }
+
     // create recent companies
     const result = await RecentCompanies.create(payload);
     // delete older recent companies if more than 10
@@ -28,7 +29,14 @@ const createRecentCompanies = async (
       await RecentCompanies.deleteMany({ _id: { $in: recentCompaniesToDeleteIds } });
     }
     return result;
-
 };
 
-export const RecentCompaniesServices = { createRecentCompanies };
+// get recent companies by user id
+const getUserRecentCompanies = async (id: string) => {
+    const result = await RecentCompanies.find({ user: id }).sort({ updatedAt: -1 }).populate('company').limit(10);
+    // send company details only
+    const formatedResult = result.map((item) => item.company);
+    return formatedResult;
+};
+
+export const RecentCompaniesServices = { createRecentCompanies, getUserRecentCompanies };

@@ -14,4 +14,11 @@ router.post(
   RecentCompaniesController.createRecentCompanies
 );
 
+// get user recent companies
+router.get(
+  '/',
+  auth(USER_ROLES.USER, USER_ROLES.OWNER),
+  RecentCompaniesController.getUserRecentCompanies
+);
+
 export const RecentCompaniesRoutes = router;
