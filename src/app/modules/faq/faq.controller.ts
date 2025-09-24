@@ -19,4 +19,20 @@ const createFaq = catchAsync(
   }
 );
 
-export const FaqController = { createFaq };
+// update faq controller
+const updateFaq = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const { ...payload } = req.body;
+    const result = await FaqServices.updateFaqToDB(id, payload);
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: 'Faq updated successfully',
+      data: result,
+    });
+  }
+);
+
+export const FaqController = { createFaq, updateFaq };

@@ -13,4 +13,16 @@ const createFaqToDB = async (payload: IFaq) => {
   return result;
 };
 
-export const FaqServices = { createFaqToDB };
+// update faq service
+const updateFaqToDB = async (id: string, payload: Partial<IFaq>) => {
+  // check if faq exists
+  const existingFaq = await Faq.findById(id);
+  if (!existingFaq) {
+    throw new Error('Faq not found');
+  }
+
+  const result = await Faq.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
+export const FaqServices = { createFaqToDB, updateFaqToDB };
