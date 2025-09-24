@@ -15,4 +15,11 @@ router.post(
   DisclaimerController.createUpdateDisclaimer
 );
 
+// get disclaimer by type
+router.get(
+  '/:type',
+  validateRequest(DisclaimerValidations.getDisclaimerByTypeZodSchema),
+  DisclaimerController.getDisclaimerByType
+);
+
 export const DisclaimerRoutes = router;

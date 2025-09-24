@@ -18,4 +18,19 @@ const createUpdateDisclaimer = catchAsync(
   }
 );
 
-export const DisclaimerController = { createUpdateDisclaimer };
+// get disclaimer by type
+const getDisclaimerByType = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const type = req.params.type;
+    const result = await DisclaimerServices.getAllDisclaimer(type);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Disclaimer fetched successfully',
+      data: result,
+    });
+  }
+);
+
+export const DisclaimerController = { createUpdateDisclaimer, getDisclaimerByType };

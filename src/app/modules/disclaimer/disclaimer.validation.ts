@@ -15,6 +15,16 @@ const createUpdateDisclaimerZodSchema = z.object({
     .strict(),
 });
 
+// get disclaimer by type validation schema
+const getDisclaimerByTypeZodSchema = z.object({
+  params: z.object({
+    type: z.nativeEnum(DisclaimerTypes, {
+      required_error: 'Type is required',
+    }),
+  }),
+});
+
 export const DisclaimerValidations = {
   createUpdateDisclaimerZodSchema,
+  getDisclaimerByTypeZodSchema,
 };
