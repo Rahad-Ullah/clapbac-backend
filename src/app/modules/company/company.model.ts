@@ -8,7 +8,8 @@ const companySchema = new Schema<ICompany, CompanyModel>(
       required: true,
     },
     category: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
       required: true,
     },
     logo: {

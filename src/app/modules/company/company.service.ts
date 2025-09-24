@@ -32,7 +32,10 @@ const updateCompany = async (
 
 // get all companies with pagination and search
 const getAllCompanies = async (query: Record<string, unknown>) => {
-  const companyQuery = new QueryBuilder(Company.find(), query)
+  const companyQuery = new QueryBuilder(
+    Company.find().populate('category', 'name icon'),
+    query
+  )
     .search(['name'])
     .filter()
     .paginate()

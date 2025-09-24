@@ -8,15 +8,14 @@ import generateOTP from '../../../util/generateOTP';
 import { IUser } from './user.interface';
 import { User } from './user.model';
 import { USER_ROLES, USER_STATUS } from './user.constant';
-import { CompanyServices } from '../company/company.service';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { Company } from '../company/company.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 
 const createOwnerToDB = async (
   payload: Partial<IUser> & {
     companyName: string;
-    businessCategory: string;
+    businessCategory: Types.ObjectId;
     website: string;
   }
 ) => {

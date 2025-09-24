@@ -3,7 +3,7 @@ import { Model, Types } from 'mongoose';
 export type ICompany = {
   _id?: Types.ObjectId;
   name: string;
-  category: string;
+  category: Types.ObjectId;
   logo: string;
   about: string;
   address: string;
