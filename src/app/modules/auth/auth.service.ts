@@ -21,7 +21,9 @@ import { USER_STATUS } from '../user/user.constant';
 //login
 const loginUserFromDB = async (payload: ILoginData) => {
   const { email, password } = payload;
-  const isExistUser = await User.findOne({ email }).select('+password');
+  const isExistUser = await User.findOne({ email, isDeleted: false }).select(
+    '+password'
+  );
   if (!isExistUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   }
@@ -35,10 +37,10 @@ const loginUserFromDB = async (payload: ILoginData) => {
   }
 
   //check user status
-  if (isExistUser.status !== USER_STATUS.ACTIVE) {
+  if (isExistUser.status === USER_STATUS.BANNED) {
     throw new ApiError(
       StatusCodes.BAD_REQUEST,
-      'You don’t have permission to access this content.It looks like your account has been deactivated.'
+      'It looks like your account has been deactivated. Please contact support for assistance.'
     );
   }
 
