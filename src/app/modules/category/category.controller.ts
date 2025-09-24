@@ -23,4 +23,24 @@ const createCategory = catchAsync(
   }
 );
 
-export const CategoryController = { createCategory };
+// update category controller
+const updateCategory = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const icon = getSingleFilePath(req.files, 'image');
+
+    const result = await CategoryServices.updateCategoryToDB(id, {
+      ...req.body,
+      icon,
+    });
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Category updated successfully',
+      data: result,
+    });
+  }
+);
+
+export const CategoryController = { createCategory, updateCategory };

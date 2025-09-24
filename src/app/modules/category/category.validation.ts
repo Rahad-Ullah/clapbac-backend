@@ -15,4 +15,20 @@ const createCategoryZodSchema = z.object({
     .strict(),
 });
 
-export const CategoryValidations = { createCategoryZodSchema };
+// update category validation
+const updateCategoryZodSchema = z.object({
+  body: z
+    .object({
+      name: z
+        .string({ required_error: 'Name is required' })
+        .nonempty('Name cannot be empty')
+        .optional(),
+      image: z
+        .string({ required_error: 'Icon image is required' })
+        .nonempty('Icon image cannot be empty')
+        .optional(),
+    })
+    .strict(),
+});
+
+export const CategoryValidations = { createCategoryZodSchema, updateCategoryZodSchema };

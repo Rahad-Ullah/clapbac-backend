@@ -1,3 +1,4 @@
+import unlinkFile from '../../../shared/unlinkFile';
 import { ICategory } from './category.interface';
 import { Category } from './category.model';
 
@@ -13,4 +14,22 @@ const createCategoryToDB = async (payload: ICategory) => {
   return result;
 };
 
-export const CategoryServices = { createCategoryToDB };
+// update category service
+const updateCategoryToDB = async (id: string, payload: Partial<ICategory>) => {
+  // check if category exists
+  const existingCategory = await Category.findById(id);
+  if (!existingCategory) {
+    throw new Error('Category not found');
+  }
+
+  const result = await Category.findByIdAndUpdate(id, payload, { new: true });
+
+  // unlink files if image is updated
+  if (payload.icon && existingCategory.icon) {
+    unlinkFile(existingCategory.icon);
+  }
+
+  return result;
+};
+
+export const CategoryServices = { createCategoryToDB, updateCategoryToDB };

@@ -17,4 +17,13 @@ router.post(
   CategoryController.createCategory
 );
 
+// update category route
+router.patch(
+  '/:id',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  fileUploadHandler(),
+  validateRequest(CategoryValidations.updateCategoryZodSchema),
+  CategoryController.updateCategory
+);
+
 export const CategoryRoutes = router;
