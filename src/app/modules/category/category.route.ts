@@ -26,4 +26,10 @@ router.patch(
   CategoryController.updateCategory
 );
 
+// get all categories route
+router.get(
+  '/',
+  CategoryController.getAllCategories
+);
+
 export const CategoryRoutes = router;

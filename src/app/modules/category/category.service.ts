@@ -1,4 +1,5 @@
 import unlinkFile from '../../../shared/unlinkFile';
+import QueryBuilder from '../../builder/QueryBuilder';
 import { ICategory } from './category.interface';
 import { Category } from './category.model';
 
@@ -32,4 +33,18 @@ const updateCategoryToDB = async (id: string, payload: Partial<ICategory>) => {
   return result;
 };
 
-export const CategoryServices = { createCategoryToDB, updateCategoryToDB };
+// get all categories
+const getAllCategories = async (query: Record<string, unknown>) => {
+  const categoryQuery = new QueryBuilder(Category.find(), query)
+    .search(['name'])
+    .sort();
+
+  const result = await categoryQuery.modelQuery;
+  return result;
+};
+
+export const CategoryServices = {
+  createCategoryToDB,
+  updateCategoryToDB,
+  getAllCategories,
+};
