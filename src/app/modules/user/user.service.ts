@@ -99,6 +99,18 @@ const createOwnerToDB = async (
   }
 };
 
+// update user by id
+const updateUserByIdToDB = async (id: string, payload: Partial<IUser>) => {
+  const isExistUser = await User.findById(id);
+  if (!isExistUser) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+  }
+
+  const result = await User.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
+// -------- update user profile --------
 const updateProfileToDB = async (
   user: JwtPayload,
   payload: Partial<IUser>
@@ -175,6 +187,7 @@ const getAllUsersFromDB = async (query: Record<string, unknown>) => {
 
 export const UserService = {
   createOwnerToDB,
+  updateUserByIdToDB,
   updateProfileToDB,
   getUserProfileFromDB,
   getUserByIdFromDB,

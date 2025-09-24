@@ -20,6 +20,22 @@ const createOwner = catchAsync(
   }
 );
 
+// update user by id
+const updateUserById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const payload = req.body;
+    const result = await UserService.updateUserByIdToDB(id, payload);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'User updated successfully',
+      data: result,
+    });
+  }
+);
+
 //update profile
 const updateProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -80,4 +96,4 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const UserController = { createOwner, updateProfile, getUserProfile, getUserById, getAllUsers };
+export const UserController = { createOwner, updateUserById, updateProfile, getUserProfile, getUserById, getAllUsers };

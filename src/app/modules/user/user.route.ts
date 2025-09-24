@@ -7,8 +7,22 @@ import { USER_ROLES } from './user.constant';
 import fileUploadHandler from '../../middlewares/fileUploadHandler';
 const router = express.Router();
 
-router.route('/profile').get(auth(), UserController.getUserProfile);
+// create business owner
+router.post(
+  '/create-owner',
+  validateRequest(UserValidation.createOwnerZodSchema),
+  UserController.createOwner
+);
 
+// update user by id
+router.patch(
+  '/:id',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validateRequest(UserValidation.updateUserZodSchema),
+  UserController.updateUserById
+);
+
+// update user profile
 router.patch(
   '/profile',
   auth(),
@@ -17,18 +31,21 @@ router.patch(
   UserController.updateProfile
 );
 
-// create business owner
-router
-  .route('/create-owner')
-  .post(
-    validateRequest(UserValidation.createOwnerZodSchema),
-    UserController.createOwner
-  );
+// get user profile
+router.route('/profile').get(auth(), UserController.getUserProfile);
 
 // get single user by id
-router.get('/:id', auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), UserController.getUserById);
+router.get(
+  '/:id',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  UserController.getUserById
+);
 
 // get all users
-router.get('/', auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), UserController.getAllUsers);
+router.get(
+  '/',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  UserController.getAllUsers
+);
 
 export const UserRoutes = router;
