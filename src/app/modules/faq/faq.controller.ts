@@ -35,4 +35,33 @@ const updateFaq = catchAsync(
   }
 );
 
-export const FaqController = { createFaq, updateFaq };
+// delete faq controller
+const deleteFaq = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const result = await FaqServices.deleteFaqFromDB(id);
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: 'Faq deleted successfully',
+      data: result,
+    });
+  }
+);
+
+// get all faqs controller
+const getAllFaqs = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await FaqServices.getAllFaqsFromDB();
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: 'Faqs retrieved successfully',
+      data: result,
+    });
+  }
+);
+
+export const FaqController = { createFaq, updateFaq, deleteFaq, getAllFaqs };

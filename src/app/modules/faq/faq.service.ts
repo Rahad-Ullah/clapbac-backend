@@ -25,4 +25,22 @@ const updateFaqToDB = async (id: string, payload: Partial<IFaq>) => {
   return result;
 };
 
-export const FaqServices = { createFaqToDB, updateFaqToDB };
+// delete faq service
+const deleteFaqFromDB = async (id: string) => {
+  // check if faq exists
+  const existingFaq = await Faq.findById(id);
+  if (!existingFaq) {
+    throw new Error('Faq not found');
+  }
+
+  const result = await Faq.findByIdAndDelete(id);
+  return result;
+};
+
+// get all faqs service
+const getAllFaqsFromDB = async () => {
+  const result = await Faq.find();
+  return result;
+};
+
+export const FaqServices = { createFaqToDB, updateFaqToDB, deleteFaqFromDB, getAllFaqsFromDB };

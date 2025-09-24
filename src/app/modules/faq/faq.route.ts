@@ -23,4 +23,14 @@ router.patch(
   FaqController.updateFaq
 );
 
+// delete faq
+router.delete(
+  '/:id',
+  auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  FaqController.deleteFaq
+);
+
+// get all faqs
+router.get('/', FaqController.getAllFaqs);
+
 export const FaqRoutes = router;
