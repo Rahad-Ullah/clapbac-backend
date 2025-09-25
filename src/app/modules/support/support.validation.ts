@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SupportStatus } from './support.constant';
 
 // create zod schema for support module
 const createSupportZodSchema = z.object({
@@ -25,4 +26,20 @@ const createSupportZodSchema = z.object({
     .strict(),
 });
 
-export const SupportValidations = { createSupportZodSchema };
+// update zod schema for support module
+const updateSupportZodSchema = z.object({
+  body: z
+    .object({
+      status: z
+        .nativeEnum(SupportStatus, {
+          invalid_type_error: 'Invalid status value',
+        })
+        .optional(),
+    })
+    .strict(),
+});
+
+export const SupportValidations = {
+  createSupportZodSchema,
+  updateSupportZodSchema,
+};

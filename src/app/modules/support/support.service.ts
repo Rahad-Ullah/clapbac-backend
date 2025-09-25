@@ -7,4 +7,12 @@ const createSupport = async (payload: ISupport): Promise<ISupport> => {
   return result;
 };
 
-export const SupportServices = { createSupport };
+// update support
+const updateSupport = async (id: string, payload: ISupport): Promise<ISupport | null> => {
+  const result = await Support.findByIdAndUpdate(id, payload, {
+    new: true,
+  });
+  return result;
+}
+
+export const SupportServices = { createSupport, updateSupport };

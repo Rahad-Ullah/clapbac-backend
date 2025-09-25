@@ -18,4 +18,18 @@ const createSupport = catchAsync(
   }
 );
 
-export const SupportController = { createSupport };
+// update support
+const updateSupport = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const id = req.params.id;
+  const payload = req.body;
+  const result = await SupportServices.updateSupport(id, payload);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Support updated successfully',
+    data: result,
+  });
+});
+
+export const SupportController = { createSupport, updateSupport };
