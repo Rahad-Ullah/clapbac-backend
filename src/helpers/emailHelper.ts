@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 const sendEmail = async (values: ISendEmail) => {
   try {
     const info = await transporter.sendMail({
-      from: `Clapback <${config.email.user}>`,
+      from: `${config.server_name} <${config.email.user}>`,
       to: values.to,
       subject: values.subject,
       html: values.html,

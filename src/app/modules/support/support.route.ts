@@ -21,4 +21,7 @@ router.patch(
   SupportController.updateSupport
 );
 
+// get all supports
+router.get('/', auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), SupportController.getAllSupports);
+
 export const SupportRoutes = router;

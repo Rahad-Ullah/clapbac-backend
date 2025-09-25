@@ -32,4 +32,20 @@ const updateSupport = catchAsync(async (req: Request, res: Response, next: NextF
   });
 });
 
-export const SupportController = { createSupport, updateSupport };
+// get all supports
+const getAllSupports = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query;
+    const result = await SupportServices.getAllSupports(query);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Supports retrieved successfully',
+      data: result.data,
+      pagination: result.pagination,
+    });
+  }
+);
+
+export const SupportController = { createSupport, updateSupport, getAllSupports };
