@@ -10,11 +10,11 @@ export type IReview = {
   reviewSource: string;
   sourceLink: string;
   experienceDate: Date;
-  clapbacTitle?: string;
-  clapbacMessage?: string;
-  clapbacRating?: number;
-  reviewerType?: string;
-  reviewerConsequence?: string;
+  clapbacTitle: string;
+  clapbacMessage: string;
+  clapbacRating: number;
+  reviewerType: string;
+  reviewerConsequence: string;
   helpfulCount: number;
   isDeleted: boolean;
   createdAt?: Date;

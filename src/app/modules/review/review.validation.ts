@@ -23,11 +23,24 @@ const createReviewZodSchema = z.object({
       experienceDate: z
         .string({ required_error: 'Experience date is required' })
         .nonempty({ message: 'Experience date cannot be empty' }),
-      clapbacTitle: z.string().optional(),
-      clapbacMessage: z.string().optional(),
-      clapbacRating: z.number().min(0).max(5).optional(),
-      reviewerType: z.string().optional(),
-      reviewerConsequence: z.string().optional(),
+      clapbacTitle: z
+        .string({ required_error: 'Clapbac title is required' })
+        .nonempty({ message: 'Clapbac title cannot be empty' }),
+      clapbacMessage: z
+        .string({ required_error: 'Clapbac message is required' })
+        .nonempty({ message: 'Clapbac message cannot be empty' }),
+      clapbacRating: z
+        .number({ required_error: 'Clapbac rating is required' })
+        .min(1, { message: 'Clapbac rating must be at least 0' })
+        .max(5, { message: 'Clapbac rating cannot be more than 5' }),
+      reviewerType: z
+        .string({ required_error: 'Reviewer type is required' })
+        .nonempty({ message: 'Reviewer type cannot be empty' }),
+      reviewerConsequence: z
+        .string({
+          required_error: 'Reviewer consequence is required',
+        })
+        .nonempty({ message: 'Reviewer consequence cannot be empty' }),
     })
     .strict(),
 });
