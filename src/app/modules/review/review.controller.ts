@@ -18,4 +18,18 @@ const createReview = catchAsync(
   }
 );
 
-export const ReviewController = { createReview };
+// update review
+const updateReview = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const payload = req.body;
+  const result = await ReviewServices.updateReviewToDB(id, payload);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Review updated successfully',
+    data: result,
+  });
+});
+
+export const ReviewController = { createReview, updateReview };

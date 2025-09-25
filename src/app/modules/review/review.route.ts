@@ -15,4 +15,12 @@ router.post(
   ReviewController.createReview
 );
 
+// update review
+router.patch(
+  '/:id',
+  auth(USER_ROLES.OWNER),
+  validateRequest(ReviewValidations.updateReviewZodSchema),
+  ReviewController.updateReview
+);
+
 export const ReviewRoutes = router;

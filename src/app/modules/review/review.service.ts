@@ -19,4 +19,16 @@ const createReviewToDB = async (payload: IReview): Promise<IReview> => {
   return result;
 };
 
-export const ReviewServices = { createReviewToDB };
+// update review service
+const updateReviewToDB = async (id: string, payload: Partial<IReview>) => {
+  // check if review exists
+  const existingReview = await Review.findById(id);
+  if (!existingReview) {
+    throw new Error('Review not found');
+  }
+  
+  const result = await Review.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
+export const ReviewServices = { createReviewToDB, updateReviewToDB };
