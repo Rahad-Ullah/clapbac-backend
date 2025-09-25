@@ -16,6 +16,29 @@ const createReviewToDB = async (payload: IReview): Promise<IReview> => {
   payload.company = isCompanyExist._id;
 
   const result = await Review.create(payload);
+
+  // calculate avg review rating
+  const avgResult = await Review.aggregate([
+    {
+      $group: {
+        _id: null,
+        avgRating: { $avg: '$reviewRating' },
+      },
+    },
+  ]);
+
+  const averageRating = avgResult[0]?.avgRating || 0;
+
+  // update company rating
+  await Company.findOneAndUpdate(
+    { _id: isCompanyExist._id },
+    {
+      $inc: { reviewCount: 1 },
+      $set: { avgRating: averageRating },
+    },
+    { new: true }
+  );
+
   return result;
 };
 
