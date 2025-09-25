@@ -23,4 +23,10 @@ router.patch(
   ReviewController.updateReview
 );
 
+// get review by company id
+router.get(
+  '/company/:id',
+  ReviewController.getReviewByCompanyId
+);
+
 export const ReviewRoutes = router;

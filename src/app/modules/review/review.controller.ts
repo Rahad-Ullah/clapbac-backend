@@ -32,4 +32,17 @@ const updateReview = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const ReviewController = { createReview, updateReview };
+// get review by company id
+const getReviewByCompanyId = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await ReviewServices.getReviewByCompanyId(id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Review retrieved successfully',
+    data: result,
+  });
+});
+
+export const ReviewController = { createReview, updateReview, getReviewByCompanyId };

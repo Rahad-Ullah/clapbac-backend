@@ -31,4 +31,10 @@ const updateReviewToDB = async (id: string, payload: Partial<IReview>) => {
   return result;
 };
 
-export const ReviewServices = { createReviewToDB, updateReviewToDB };
+// get review by company id
+const getReviewByCompanyId = async (id: string) => {
+  const result = await Review.find({ company: id }).populate('user', 'name title image').populate('company', 'name');
+  return result;
+};
+
+export const ReviewServices = { createReviewToDB, updateReviewToDB, getReviewByCompanyId };
