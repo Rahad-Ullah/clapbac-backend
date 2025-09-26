@@ -29,4 +29,10 @@ router.get(
   ReviewController.getReviewByCompanyId
 );
 
+// get all reviewers
+router.get(
+  '/reviewers',
+  ReviewController.getAllReviewers
+);
+
 export const ReviewRoutes = router;

@@ -45,4 +45,17 @@ const getReviewByCompanyId = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const ReviewController = { createReview, updateReview, getReviewByCompanyId };
+// get all reviewers
+const getAllReviewers = catchAsync(async (req: Request, res: Response) => {
+  const result = await ReviewServices.getAllReviewers(req.query);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Reviewers retrieved successfully',
+    data: result.data,
+    pagination: result.pagination as any
+  });
+});
+
+export const ReviewController = { createReview, updateReview, getReviewByCompanyId, getAllReviewers };

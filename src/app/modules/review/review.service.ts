@@ -34,7 +34,9 @@ const createReviewToDB = async (payload: IReview): Promise<IReview> => {
       },
     ]).session(session);
 
-    const averageRating = stats[0]?.avgRating ? Number(stats[0].avgRating.toFixed(1)) : 0;
+    const averageRating = stats[0]?.avgRating
+      ? Number(stats[0].avgRating.toFixed(1))
+      : 0;
     const reviewCount = stats[0]?.reviewCount || 0;
 
     // update company rating
@@ -96,7 +98,9 @@ const updateReviewToDB = async (
       },
     ]).session(session);
 
-    const averageRating = stats[0]?.avgRating ? Number(stats[0].avgRating.toFixed(1)) : 0;
+    const averageRating = stats[0]?.avgRating
+      ? Number(stats[0].avgRating.toFixed(1))
+      : 0;
     const reviewCount = stats[0]?.reviewCount || 0;
 
     await Company.findByIdAndUpdate(
@@ -129,8 +133,71 @@ const getReviewByCompanyId = async (id: string) => {
   return result;
 };
 
+// group review by reviewer name and get reviewer with their last review
+const getAllReviewers = async (query: Record<string, unknown>) => {
+  const { reviewerType, page = 1, limit = 10 } = query;
+
+  const matchStage = reviewerType ? { $match: { reviewerType } } : null;
+
+  const pipeline: any[] = [];
+
+  if (matchStage) pipeline.push(matchStage);
+
+  // Sort by createdAt (latest first)
+  pipeline.push({ $sort: { createdAt: -1 } });
+
+  // Group by reviewerName
+  pipeline.push({
+    $group: {
+      _id: '$reviewerName',
+      latestReview: { $first: '$$ROOT' },
+    },
+  });
+
+  // Unwrap latestReview
+  pipeline.push({ $replaceRoot: { newRoot: '$latestReview' } });
+
+  // Use $facet to split into data + count in a single query
+  pipeline.push({
+    $facet: {
+      data: [{ $skip: (Number(page) - 1) * Number(limit) }, { $limit: limit }],
+      totalCount: [{ $count: 'count' }],
+    },
+  });
+
+  // Run aggregation
+  const result = await Review.aggregate(pipeline);
+
+  const reviewers = result[0].data || [];
+  const total = result[0].totalCount[0]?.count || 0;
+  const totalPage = Math.ceil(total / Number(limit));
+
+  // Populate refs
+  const populatedReviewers = await Review.populate(reviewers, [
+    {
+      path: 'user',
+      select: 'firstName lastName title',
+    },
+    {
+      path: 'company',
+      select: 'name logo',
+    },
+  ]);
+
+  return {
+    data: populatedReviewers,
+    pagination: {
+      total,
+      limit,
+      page,
+      totalPage,
+    },
+  };
+};
+
 export const ReviewServices = {
   createReviewToDB,
   updateReviewToDB,
   getReviewByCompanyId,
+  getAllReviewers,
 };
