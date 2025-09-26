@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ReviewServices } from './review.service';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
+import { cachedReviewers } from '../../../DB/cache';
 
 // create review controller
 const createReview = catchAsync(
@@ -47,14 +48,51 @@ const getReviewByCompanyId = catchAsync(async (req: Request, res: Response) => {
 
 // get all reviewers
 const getAllReviewers = catchAsync(async (req: Request, res: Response) => {
-  const result = await ReviewServices.getAllReviewers(req.query);
+  const now = Date.now();
+  const cacheDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
+  let data;
+  let message;
+
+  // get reviewers from cache if type is provided
+  if (req.query.reviewerType) {
+    const cacheItem = cachedReviewers.find(
+      (reviewer: any) => reviewer.reviewerType === req.query.reviewerType
+    );
+    // check if the cache is still valid
+    if (cacheItem && now - cacheItem.lastFetched < cacheDuration) {
+      data = cacheItem.data;
+      message = 'Reviewers retrieved from cache';
+    } else {
+      data = await ReviewServices.getAllReviewers(req.query);
+      message = 'Reviewers retrieved from database';
+      cachedReviewers.push({
+        reviewerType: req.query.reviewerType as string,
+        data,
+        lastFetched: now,
+      });
+    }
+  } else {
+    // get reviewers from cache if type is not provided
+    const cacheItem = cachedReviewers.find(
+      (reviewer: any) => reviewer.reviewerType === null
+    );
+    // check if the cache is still valid
+    if (cacheItem && now - cacheItem.lastFetched < cacheDuration) {
+      data = cacheItem.data;
+      message = 'Reviewers retrieved from cache';
+    } else {
+      data = await ReviewServices.getAllReviewers(req.query);
+      message = 'Reviewers retrieved from database';
+      cachedReviewers.push({ reviewerType: null, data, lastFetched: now });
+    }
+  }
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Reviewers retrieved successfully',
-    data: result.data,
-    pagination: result.pagination as any
+    message: message,
+    data: data.data,
+    pagination: data.pagination,
   });
 });
 
