@@ -34,7 +34,7 @@ const createReviewToDB = async (payload: IReview): Promise<IReview> => {
       },
     ]).session(session);
 
-    const averageRating = stats[0]?.avgRating || 0;
+    const averageRating = stats[0]?.avgRating ? Number(stats[0].avgRating.toFixed(1)) : 0;
     const reviewCount = stats[0]?.reviewCount || 0;
 
     // update company rating
@@ -96,7 +96,7 @@ const updateReviewToDB = async (
       },
     ]).session(session);
 
-    const averageRating = stats[0]?.avgRating || 0;
+    const averageRating = stats[0]?.avgRating ? Number(stats[0].avgRating.toFixed(1)) : 0;
     const reviewCount = stats[0]?.reviewCount || 0;
 
     await Company.findByIdAndUpdate(
