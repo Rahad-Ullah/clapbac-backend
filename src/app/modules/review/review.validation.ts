@@ -9,7 +9,7 @@ const createReviewZodSchema = z.object({
         .nonempty({ message: 'Reviewer name cannot be empty' }),
       reviewRating: z
         .number({ required_error: 'Review rating is required' })
-        .min(1, { message: 'Review rating must be at least 1' })
+        .min(0.5, { message: 'Review rating must be at least 0.5' })
         .max(5, { message: 'Review rating cannot be more than 5' }),
       reviewMessage: z
         .string({ required_error: 'Review message is required' })
@@ -31,7 +31,7 @@ const createReviewZodSchema = z.object({
         .nonempty({ message: 'Clapbac message cannot be empty' }),
       clapbacRating: z
         .number({ required_error: 'Clapbac rating is required' })
-        .min(1, { message: 'Clapbac rating must be at least 0' })
+        .min(0.5, { message: 'Clapbac rating must be at least 0.5' })
         .max(5, { message: 'Clapbac rating cannot be more than 5' }),
       reviewerType: z
         .string({ required_error: 'Reviewer type is required' })
@@ -55,7 +55,7 @@ const updateReviewZodSchema = z.object({
         .optional(),
       reviewRating: z
         .number({ required_error: 'Review rating is required' })
-        .min(1, { message: 'Review rating must be at least 1' })
+        .min(0.5, { message: 'Review rating must be at least 0.5' })
         .max(5, { message: 'Review rating cannot be more than 5' })
         .optional(),
       reviewMessage: z
@@ -84,7 +84,7 @@ const updateReviewZodSchema = z.object({
         .optional(),
       clapbacRating: z
         .number({ required_error: 'Clapbac rating is required' })
-        .min(1, { message: 'Clapbac rating must be at least 0' })
+        .min(0.5, { message: 'Clapbac rating must be at least 0.5' })
         .max(5, { message: 'Clapbac rating cannot be more than 5' })
         .optional(),
       reviewerType: z
