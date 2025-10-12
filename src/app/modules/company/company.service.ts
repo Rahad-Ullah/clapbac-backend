@@ -30,6 +30,16 @@ const updateCompany = async (
   return updatedCompany;
 };
 
+// get single by id
+const getSingleById = async (id: string) => {
+  const result = await Company.findById(id).populate('category', 'name icon').lean()
+  if(!result){
+    throw new ApiError(StatusCodes.NOT_FOUND, "Company not found")
+  }
+
+  return result;
+}
+
 // get all companies with pagination and search
 const getAllCompanies = async (query: Record<string, unknown>) => {
   const companyQuery = new QueryBuilder(
@@ -49,4 +59,4 @@ const getAllCompanies = async (query: Record<string, unknown>) => {
   return { data, pagination };
 };
 
-export const CompanyServices = { updateCompany, getAllCompanies };
+export const CompanyServices = { updateCompany, getSingleById, getAllCompanies };

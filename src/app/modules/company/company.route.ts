@@ -17,6 +17,12 @@ router.patch(
   CompanyController.updateCompany
 ); 
 
+// get single company
+router.get(
+  '/:id',
+  CompanyController.getSingleById
+);
+
 // get all companies
 router.get(
   '/',
