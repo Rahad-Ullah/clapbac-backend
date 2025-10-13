@@ -135,7 +135,9 @@ const getReviewByCompanyId = async (id: string) => {
 
 // group review by reviewer name and get reviewer with their last review
 const getAllReviewers = async (query: Record<string, unknown>) => {
-  const { reviewerType, page = 1, limit = 10 } = query;
+  const { reviewerType } = query;
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
 
   const matchStage = reviewerType ? { $match: { reviewerType } } : null;
 
@@ -160,7 +162,7 @@ const getAllReviewers = async (query: Record<string, unknown>) => {
   // Use $facet to split into data + count in a single query
   pipeline.push({
     $facet: {
-      data: [{ $skip: (Number(page) - 1) * Number(limit) }, { $limit: limit }],
+      data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
       totalCount: [{ $count: 'count' }],
     },
   });
@@ -170,7 +172,7 @@ const getAllReviewers = async (query: Record<string, unknown>) => {
 
   const reviewers = result[0].data || [];
   const total = result[0].totalCount[0]?.count || 0;
-  const totalPage = Math.ceil(total / Number(limit));
+  const totalPage = Math.ceil(total / limit);
 
   // Populate refs
   const populatedReviewers = await Review.populate(reviewers, [

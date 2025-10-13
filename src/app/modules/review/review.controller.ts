@@ -49,51 +49,42 @@ const getReviewByCompanyId = catchAsync(async (req: Request, res: Response) => {
 // get all reviewers
 const getAllReviewers = catchAsync(async (req: Request, res: Response) => {
   const now = Date.now();
-  const cacheDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
+  const cacheDuration = 5 * 60 * 1000; // 5 minutes
+
+  // Create a unique cache key from query params (includes reviewerType, page, etc.)
+  const cacheKey = JSON.stringify(req.query);
+
   let data;
   let message;
 
-  // get reviewers from cache if type is provided
-  if (req.query.reviewerType) {
-    const cacheItem = cachedReviewers.find(
-      (reviewer: any) => reviewer.reviewerType === req.query.reviewerType
-    );
-    // check if the cache is still valid
-    if (cacheItem && now - cacheItem.lastFetched < cacheDuration) {
-      data = cacheItem.data;
-      message = 'Reviewers retrieved from cache';
-    } else {
-      data = await ReviewServices.getAllReviewers(req.query);
-      message = 'Reviewers retrieved from database';
-      cachedReviewers.push({
-        reviewerType: req.query.reviewerType as string,
-        data,
-        lastFetched: now,
-      });
-    }
+  // Try to retrieve from cache
+  const cacheItem = cachedReviewers.get(cacheKey);
+
+  // Check if cache exists and is still valid
+  if (cacheItem && now - cacheItem.lastFetched < cacheDuration) {
+    data = cacheItem.data;
+    message = 'Reviewers retrieved from cache';
   } else {
-    // get reviewers from cache if type is not provided
-    const cacheItem = cachedReviewers.find(
-      (reviewer: any) => reviewer.reviewerType === null
-    );
-    // check if the cache is still valid
-    if (cacheItem && now - cacheItem.lastFetched < cacheDuration) {
-      data = cacheItem.data;
-      message = 'Reviewers retrieved from cache';
-    } else {
-      data = await ReviewServices.getAllReviewers(req.query);
-      message = 'Reviewers retrieved from database';
-      cachedReviewers.push({ reviewerType: null, data, lastFetched: now });
-    }
+    // Cache miss or expired → fetch fresh data
+    data = await ReviewServices.getAllReviewers(req.query);
+    message = 'Reviewers retrieved from database';
+
+    // Save new data in cache
+    cachedReviewers.set(cacheKey, {
+      data,
+      lastFetched: now,
+    });
   }
 
+  // Send API response
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: message,
-    data: data.data,
-    pagination: data.pagination,
+    message,
+    data: data?.data,
+    pagination: data?.pagination,
   });
 });
+
 
 export const ReviewController = { createReview, updateReview, getReviewByCompanyId, getAllReviewers };
