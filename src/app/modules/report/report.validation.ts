@@ -13,7 +13,7 @@ const createReportZodSchema = z.object({
         .string({ required_error: 'Reason is required' })
         .nonempty('Reason cannot be empty'),
     })
-    .strict(),
+    .strict('Unknown fields are not allowed'),
 });
 
 // update report validation
@@ -22,7 +22,7 @@ const updateReportZodSchema = z.object({
     .object({
       status: z.nativeEnum(ReportStatus).optional(),
     })
-    .strict(),
+    .strict('Unknown fields are not allowed'),
 });
 
 export const ReportValidations = {

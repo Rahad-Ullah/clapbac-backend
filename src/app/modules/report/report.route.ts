@@ -7,11 +7,20 @@ import { ReportValidations } from './report.validation';
 
 const router = express.Router();
 
+// create report
 router.post(
   '/create',
   auth(USER_ROLES.USER, USER_ROLES.OWNER),
   validateRequest(ReportValidations.createReportZodSchema),
   ReportController.createReport
 ); 
+
+// update report
+router.patch(
+  '/:id',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validateRequest(ReportValidations.updateReportZodSchema),
+  ReportController.updateReport
+);
 
 export const ReportRoutes = router;

@@ -14,4 +14,16 @@ const createReport = async (payload: IReport): Promise<IReport> => {
   return result;
 };
 
-export const ReportServices = { createReport };
+// ----------- update report  -----------
+const updateReport = async (id: string, payload: Partial<IReport>) => {
+  // check if report exists
+  const existingReport = await Report.findById(id);
+  if (!existingReport) {
+    throw new Error('Report not found');
+  }
+
+  const result = await Report.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
+export const ReportServices = { createReport, updateReport };
