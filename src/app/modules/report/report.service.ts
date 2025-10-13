@@ -10,6 +10,21 @@ const createReport = async (payload: IReport): Promise<IReport> => {
     throw new Error('Review not found');
   }
 
+  // check if the user is the owner of the review
+  if (isExistReview.user.toString() === payload.user.toString()) {
+    throw new Error('You cannot report your own review');
+  }
+
+  // check if the user already reported this review within last 24 hours
+  const isExistReport = await Report.findOne({
+    review: payload.review,
+    user: payload.user,
+    createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+  });
+  if (isExistReport) {
+    throw new Error('You have already reported this review');
+  }
+
   const result = await Report.create(payload);
   return result;
 };
