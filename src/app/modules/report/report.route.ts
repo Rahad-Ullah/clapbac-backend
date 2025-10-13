@@ -23,4 +23,7 @@ router.patch(
   ReportController.updateReport
 );
 
+// get all reports
+router.get('/', auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), ReportController.getAllReports);
+
 export const ReportRoutes = router;

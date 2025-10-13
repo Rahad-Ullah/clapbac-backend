@@ -31,4 +31,17 @@ const updateReport = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const ReportController = { createReport, updateReport };
+// get all reports
+const getAllReports = catchAsync(async (req: Request, res: Response) => {
+  const result = await ReportServices.getAllReports(req.query);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Reports retrieved successfully',
+    data: result.data,
+    pagination: result.pagination,
+  });
+});
+
+export const ReportController = { createReport, updateReport, getAllReports };

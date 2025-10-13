@@ -1,3 +1,4 @@
+import QueryBuilder from '../../builder/QueryBuilder';
 import { Review } from '../review/review.model';
 import { IReport } from './report.interface';
 import { Report } from './report.model';
@@ -41,4 +42,38 @@ const updateReport = async (id: string, payload: Partial<IReport>) => {
   return result;
 };
 
-export const ReportServices = { createReport, updateReport };
+// ----------- get all reports with pagination  -----------
+const getAllReports = async (query: Record<string, unknown>) => {
+  const reportQuery = new QueryBuilder(
+    Report.find().populate({
+      path: 'user',
+      select: 'firstName lastName username email image',
+      match: query?.searchTerm
+        ? {
+            $or: [
+              { firstName: { $regex: new RegExp(query?.searchTerm as string, 'i') } },
+              { lastName: { $regex: new RegExp(query?.searchTerm as string, 'i') } },
+              { username: { $regex: new RegExp(query?.searchTerm as string, 'i') } },
+              { email: { $regex: new RegExp(query?.searchTerm as string, 'i') } },
+            ],
+          }
+        : undefined,
+    }),
+    query
+  )
+    .filter()
+    .paginate()
+    .sort();
+
+  const [data, pagination] = await Promise.all([
+    reportQuery.modelQuery.exec(),
+    reportQuery.getPaginationInfo(),
+  ]);
+
+    // Remove reports where user didn't match (user = null)
+  const filteredData = data.filter(report => report.user);
+
+  return { data: filteredData, pagination };
+};
+
+export const ReportServices = { createReport, updateReport, getAllReports };
