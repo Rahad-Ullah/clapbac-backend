@@ -44,4 +44,16 @@ const createCommentIntoDB = async (payload: IComment): Promise<IComment> => {
   }
 };
 
-export const CommentServices = { createCommentIntoDB };
+// ----------- update comment -----------
+const updateCommentIntoDB = async (id: string, payload: Partial<IComment>) => {
+  // check if comment exists
+  const existingComment = await Comment.findById(id);
+  if (!existingComment) {
+    throw new Error('Comment not found');
+  }
+
+  const result = await Comment.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
+export const CommentServices = { createCommentIntoDB, updateCommentIntoDB };

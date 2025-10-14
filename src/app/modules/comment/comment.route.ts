@@ -7,11 +7,20 @@ import { CommentValidations } from './comment.validation';
 
 const router = express.Router();
 
+// create comment
 router.post(
   '/create',
   auth(USER_ROLES.USER, USER_ROLES.OWNER),
   validateRequest(CommentValidations.createCommentZodSchema),
   CommentController.createComment
 ); 
+
+// update comment
+router.patch(
+  '/:id',
+  auth(USER_ROLES.USER, USER_ROLES.OWNER),
+  validateRequest(CommentValidations.updateCommentZodSchema),
+  CommentController.updateComment
+);
 
 export const CommentRoutes = router;

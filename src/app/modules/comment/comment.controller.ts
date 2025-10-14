@@ -19,4 +19,17 @@ const createComment = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const CommentController = { createComment };
+// update comment
+const updateComment = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await CommentServices.updateCommentIntoDB(id, req.body);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Comment updated successfully',
+    data: result,
+  });
+});
+
+export const CommentController = { createComment, updateComment };

@@ -20,4 +20,16 @@ const createCommentZodSchema = z.object({
     .strict('Unknown fields are not allowed'),
 });
 
-export const CommentValidations = { createCommentZodSchema };
+// update comment validation
+const updateCommentZodSchema = z.object({
+  body: z
+    .object({
+      message: z
+        .string({ required_error: 'Message is required' })
+        .nonempty('Message cannot be empty')
+        .optional(),
+    })
+    .strict('Unknown fields are not allowed'),
+});
+
+export const CommentValidations = { createCommentZodSchema, updateCommentZodSchema };
