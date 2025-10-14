@@ -66,7 +66,14 @@ const getCommentsByReviewId = async (id: string) => {
 
   const result = await Comment.find({ review: id, isDeleted: false })
     .populate('user', 'firstName lastName username email title image')
-    .populate('replies', 'message');
+    .populate({
+      path: 'replies',
+      select: 'user parent message replies',
+      populate: {
+        path: 'user',
+        select: 'firstName lastName username email title image',
+      },
+    });
   return result;
 };
 

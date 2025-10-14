@@ -1,3 +1,5 @@
+import { IComment } from '../comment/comment.interface';
+import { CommentServices } from '../comment/comment.service';
 import { Company } from '../company/company.model';
 import { IReview } from './review.interface';
 import { Review } from './review.model';
@@ -127,10 +129,25 @@ const updateReviewToDB = async (
 
 // get review by company id
 const getReviewByCompanyId = async (id: string) => {
-  const result = await Review.find({ company: id })
+  const reviews = await Review.find({ company: id })
     .populate('user', 'name title image')
     .populate('company', 'name');
-  return result;
+
+  let reviewsWithComments;
+
+  // get comments of the review
+  if (reviews.length > 0) {
+    reviewsWithComments = await Promise.all(
+      reviews.map(async (review: IReview & { comments?: IComment[] }) => {
+        const comments = await CommentServices.getCommentsByReviewId(
+          review._id?.toString() as string
+        );
+        return { ...review, comments };
+      })
+    );
+  }
+
+  return reviews?.length > 0 ? reviewsWithComments : reviews;
 };
 
 // group review by reviewer name and get reviewer with their last review

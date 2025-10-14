@@ -14,14 +14,6 @@ router.post(
   UserController.createOwner
 );
 
-// update user by id
-router.patch(
-  '/:id',
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
-  validateRequest(UserValidation.updateUserZodSchema),
-  UserController.updateUserById
-);
-
 // update user profile
 router.patch(
   '/profile',
@@ -29,6 +21,14 @@ router.patch(
   fileUploadHandler(),
   validateRequest(UserValidation.updateUserZodSchema),
   UserController.updateProfile
+);
+
+// update user by id
+router.patch(
+  '/:id',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validateRequest(UserValidation.updateUserZodSchema),
+  UserController.updateUserById
 );
 
 // get user profile
