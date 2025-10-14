@@ -56,4 +56,18 @@ const updateCommentIntoDB = async (id: string, payload: Partial<IComment>) => {
   return result;
 };
 
-export const CommentServices = { createCommentIntoDB, updateCommentIntoDB };
+// ----------- get comments by review id -----------
+const getCommentsByReviewId = async (id: string) => {
+  // check if review exists
+  const isExistReview = await Review.findById(id);
+  if (!isExistReview) {
+    throw new Error('Review not found');
+  }
+
+  const result = await Comment.find({ review: id, isDeleted: false })
+    .populate('user', 'firstName lastName username email title image')
+    .populate('replies', 'message');
+  return result;
+};
+
+export const CommentServices = { createCommentIntoDB, updateCommentIntoDB, getCommentsByReviewId };

@@ -23,4 +23,10 @@ router.patch(
   CommentController.updateComment
 );
 
+// get comments by review id
+router.get(
+  '/review/:id',
+  CommentController.getCommentsByReviewId
+);
+
 export const CommentRoutes = router;

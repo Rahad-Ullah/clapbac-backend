@@ -32,4 +32,17 @@ const updateComment = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const CommentController = { createComment, updateComment };
+// get comments by review id
+const getCommentsByReviewId = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await CommentServices.getCommentsByReviewId(id);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Comments retrieved successfully',
+    data: result,
+  });
+});
+
+export const CommentController = { createComment, updateComment, getCommentsByReviewId };
