@@ -208,7 +208,7 @@ const getAllReviewers = async (query: Record<string, unknown>) => {
   const populatedReviewers = await Review.populate(reviewers, [
     {
       path: 'user',
-      select: 'firstName lastName title',
+      select: 'firstName lastName title image',
     },
     {
       path: 'company',
