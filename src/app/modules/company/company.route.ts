@@ -11,7 +11,7 @@ const router = express.Router();
 // update company
 router.patch(
   '/:id',
-  auth(USER_ROLES.OWNER),
+  auth(USER_ROLES.OWNER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
   fileUploadHandler(),
   validateRequest(CompanyValidations.updateCompanyZodSchema),
   CompanyController.updateCompany

@@ -6,24 +6,21 @@ import { StatusCodes } from 'http-status-codes';
 import { getSingleFilePath } from '../../../shared/getFilePath';
 
 // update company
-const updateCompany = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const logo = getSingleFilePath(req.files, 'image');
+const updateCompany = catchAsync(async (req: Request, res: Response) => {
+  const logo = getSingleFilePath(req.files, 'image');
 
-    const result = await CompanyServices.updateCompany(
-      req.params.id,
-      { ...req.body, logo },
-      req.user.id
-    );
+  const result = await CompanyServices.updateCompany(req.params.id, {
+    ...req.body,
+    logo,
+  });
 
-    sendResponse(res, {
-      statusCode: StatusCodes.OK,
-      success: true,
-      message: 'Company updated successfully!',
-      data: result,
-    });
-  }
-);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Company updated successfully!',
+    data: result,
+  });
+});
 
 // get single by id
 const getSingleById = catchAsync(async (req: Request, res: Response) => {
