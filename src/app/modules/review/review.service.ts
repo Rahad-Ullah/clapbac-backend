@@ -153,15 +153,27 @@ const getReviewByCompanyId = async (id: string) => {
 
 // group review by reviewer name and get reviewer with their last review
 const getAllReviewers = async (query: Record<string, unknown>) => {
-  const { reviewerType } = query;
+  const { searchTerm, reviewerType } = query;
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 10;
 
-  const matchStage = reviewerType ? { $match: { reviewerType } } : null;
-
   const pipeline: any[] = [];
 
-  if (matchStage) pipeline.push(matchStage);
+  // Search by reviewerName
+  if (
+    searchTerm &&
+    typeof searchTerm === 'string' &&
+    searchTerm.trim() !== ''
+  ) {
+    pipeline.push({
+      $match: { reviewerName: { $regex: searchTerm, $options: 'i' } },
+    });
+  }
+
+  // Filter by reviewerType
+  if (reviewerType) {
+    pipeline.push({ $match: { reviewerType } });
+  }
 
   // Sort by createdAt (latest first)
   pipeline.push({ $sort: { createdAt: -1 } });
