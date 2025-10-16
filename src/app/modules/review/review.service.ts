@@ -154,7 +154,23 @@ const getReviewByCompanyId = async (id: string) => {
 
 // get all reviews
 const getAllReviews = async (query: Record<string, unknown>) => {
-  const reviewQuery = new QueryBuilder(Review.find({ isDeleted: false }), query)
+  const reviewQuery = new QueryBuilder(
+    Review.find({ isDeleted: false }).populate([
+      {
+        path: 'user',
+        select: 'firstName lastName username email title image',
+      },
+      {
+        path: 'company',
+        select: 'name category logo address',
+        populate: {
+          path: 'category',
+          select: 'name',
+        },
+      },
+    ]),
+    query
+  )
     .search(['reviewerName'])
     .filter()
     .paginate()
