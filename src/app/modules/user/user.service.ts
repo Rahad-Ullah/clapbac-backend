@@ -160,9 +160,9 @@ const getUserProfileFromDB = async (
 };
 
 // get user by id
-const getUserByIdFromDB = async (id: string): Promise<Partial<IUser>> => {
-  const isExistUser = await User.isExistUserById(id);
-  return isExistUser;
+const getUserByIdFromDB = async (id: string) => {
+  const result = await User.findById(id).populate('company');
+  return result;
 };
 
 // -------- get all users with pagination --------
