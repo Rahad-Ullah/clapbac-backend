@@ -11,6 +11,7 @@ import { SupportRoutes } from '../app/modules/support/support.route';
 import { ReviewRoutes } from '../app/modules/review/review.route';
 import { ReportRoutes } from '../app/modules/report/report.route';
 import { CommentRoutes } from '../app/modules/comment/comment.route';
+import { AnnounceRoutes } from '../app/modules/announce/announce.route';
 const router = express.Router();
 
 const apiRoutes = [
@@ -49,6 +50,10 @@ const apiRoutes = [
   {
     path: '/disclaimers',
     route: DisclaimerRoutes,
+  },
+  {
+    path: '/announcements',
+    route: AnnounceRoutes,
   },
   {
     path: '/contact',

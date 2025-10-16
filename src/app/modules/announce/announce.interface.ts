@@ -8,6 +8,7 @@ export type IAnnounce = {
   url: string;
   audience: AnnounceAudience;
   status: AnnounceStatus;
+  createdBy: Types.ObjectId;
   isDeleted: boolean;
   createdAt?: Date;
   updatedAt?: Date;

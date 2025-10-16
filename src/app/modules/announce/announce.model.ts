@@ -15,8 +15,9 @@ const announceSchema = new Schema<IAnnounce, AnnounceModel>(
     status: {
       type: String,
       enum: Object.values(AnnounceStatus),
-      required: true,
+      default: AnnounceStatus.DRAFT,
     },
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     isDeleted: { type: Boolean, default: false },
   },
   {
