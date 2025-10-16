@@ -5,6 +5,7 @@ export type IReview = {
   user: Types.ObjectId;
   company: Types.ObjectId;
   reviewerName: string;
+  reviewerAddress: string;
   reviewRating: number;
   reviewMessage: string;
   reviewSource: string;

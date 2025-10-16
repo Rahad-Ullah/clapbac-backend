@@ -6,6 +6,7 @@ const reviewSchema = new Schema<IReview, ReviewModel>(
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     company: { type: Schema.Types.ObjectId, ref: 'Company', required: true },
     reviewerName: { type: String, required: true },
+    reviewerAddress: { type: String, required: true, default: '' },
     reviewRating: { type: Number, required: true, min: 1, max: 5 },
     reviewMessage: { type: String, required: true },
     reviewSource: { type: String, required: true },

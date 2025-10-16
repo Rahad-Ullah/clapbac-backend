@@ -7,6 +7,9 @@ const createReviewZodSchema = z.object({
       reviewerName: z
         .string({ required_error: 'Reviewer name is required' })
         .nonempty({ message: 'Reviewer name cannot be empty' }),
+      reviewerAddress: z
+        .string({ required_error: 'Reviewer address is required' })
+        .nonempty({ message: 'Reviewer address cannot be empty' }),
       reviewRating: z
         .number({ required_error: 'Review rating is required' })
         .min(0.5, { message: 'Review rating must be at least 0.5' })
@@ -52,6 +55,10 @@ const updateReviewZodSchema = z.object({
       reviewerName: z
         .string({ required_error: 'Reviewer name is required' })
         .nonempty({ message: 'Reviewer name cannot be empty' })
+        .optional(),
+      reviewerAddress: z
+        .string({ required_error: 'Reviewer address is required' })
+        .nonempty({ message: 'Reviewer address cannot be empty' })
         .optional(),
       reviewRating: z
         .number({ required_error: 'Review rating is required' })
