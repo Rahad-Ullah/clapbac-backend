@@ -32,4 +32,17 @@ const updateAnnounce = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const AnnounceController = { createAnnounce, updateAnnounce };
+// delete announce controller
+const deleteAnnounce = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await AnnounceServices.deleteAnnounce(id);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Announce deleted successfully',
+    data: result,
+  });
+});
+
+export const AnnounceController = { createAnnounce, updateAnnounce, deleteAnnounce };

@@ -23,4 +23,11 @@ router.patch(
   AnnounceController.updateAnnounce
 );
 
+// delete announce
+router.delete(
+  '/:id',
+  auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  AnnounceController.deleteAnnounce
+);
+
 export const AnnounceRoutes = router;
