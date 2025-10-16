@@ -45,7 +45,8 @@ const updateReport = async (id: string, payload: Partial<IReport>) => {
 // ----------- get all reports with pagination  -----------
 const getAllReports = async (query: Record<string, unknown>) => {
   const reportQuery = new QueryBuilder(
-    Report.find().populate({
+    Report.find().populate([
+      {
       path: 'user',
       select: 'firstName lastName username email image',
       match: query?.searchTerm
@@ -58,7 +59,11 @@ const getAllReports = async (query: Record<string, unknown>) => {
             ],
           }
         : undefined,
-    }),
+    },
+    {
+      path: 'review',
+    }
+    ]),
     query
   )
     .filter()
