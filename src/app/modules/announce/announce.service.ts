@@ -13,4 +13,16 @@ const createAnnounceToDB = async (payload: IAnnounce): Promise<IAnnounce> => {
   return result;
 };
 
-export const AnnounceServices = { createAnnounceToDB };
+// ----------- update announce -----------
+const updateAnnounce = async (id: string, payload: Partial<IAnnounce>) => {
+  // check if announce exists
+  const existingAnnounce = await Announce.findById(id);
+  if (!existingAnnounce) {
+    throw new Error('Announce not found');
+  }
+
+  const result = await Announce.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+}
+
+export const AnnounceServices = { createAnnounceToDB, updateAnnounce };

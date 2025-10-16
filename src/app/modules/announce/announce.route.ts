@@ -15,4 +15,12 @@ router.post(
   AnnounceController.createAnnounce
 ); 
 
+// update announce
+router.patch(
+  '/:id',
+  auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  validateRequest(AnnounceValidations.updateAnnounceZodSchema),
+  AnnounceController.updateAnnounce
+);
+
 export const AnnounceRoutes = router;

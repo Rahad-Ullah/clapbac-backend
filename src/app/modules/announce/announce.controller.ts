@@ -19,4 +19,17 @@ const createAnnounce = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const AnnounceController = { createAnnounce };
+// update announce controller
+const updateAnnounce = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await AnnounceServices.updateAnnounce(id, req.body);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Announce updated successfully',
+    data: result,
+  });
+});
+
+export const AnnounceController = { createAnnounce, updateAnnounce };
