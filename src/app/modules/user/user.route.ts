@@ -31,6 +31,13 @@ router.patch(
   UserController.updateUserById
 );
 
+// delete user by id
+router.delete(
+  '/:id',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  UserController.deleteUserById
+);
+
 // get user profile
 router.route('/profile').get(auth(), UserController.getUserProfile);
 

@@ -57,6 +57,21 @@ const updateProfile = catchAsync(
   }
 );
 
+// delete user by id
+const deleteUserById = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await UserService.deleteUserByIdFromDB(id);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'User deleted successfully',
+      data: result,
+    });
+  }
+);
+
 // get user profile
 const getUserProfile = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
@@ -96,4 +111,4 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const UserController = { createOwner, updateUserById, updateProfile, getUserProfile, getUserById, getAllUsers };
+export const UserController = { createOwner, updateUserById, updateProfile, deleteUserById, getUserProfile, getUserById, getAllUsers };
