@@ -1,3 +1,4 @@
+import QueryBuilder from '../../builder/QueryBuilder';
 import { IAnnounce } from './announce.interface';
 import { Announce } from './announce.model';
 
@@ -23,7 +24,7 @@ const updateAnnounce = async (id: string, payload: Partial<IAnnounce>) => {
 
   const result = await Announce.findByIdAndUpdate(id, payload, { new: true });
   return result;
-}
+};
 
 // ----------- delete announce -----------
 const deleteAnnounce = async (id: string) => {
@@ -33,8 +34,36 @@ const deleteAnnounce = async (id: string) => {
     throw new Error('Announce not found');
   }
 
-  const result = await Announce.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+  const result = await Announce.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true }
+  );
   return result;
-}
+};
 
-export const AnnounceServices = { createAnnounceToDB, updateAnnounce, deleteAnnounce };
+// get all announces
+const getAllAnnounces = async (query: Record<string, unknown>) => {
+  const announceQuery = new QueryBuilder(
+    Announce.find({ isDeleted: false }),
+    query
+  )
+    .search(['title'])
+    .filter()
+    .paginate()
+    .sort();
+
+  const [data, pagination] = await Promise.all([
+    announceQuery.modelQuery.lean(),
+    announceQuery.getPaginationInfo(),
+  ]);
+
+  return { data, pagination };
+};
+
+export const AnnounceServices = {
+  createAnnounceToDB,
+  updateAnnounce,
+  deleteAnnounce,
+  getAllAnnounces,
+};

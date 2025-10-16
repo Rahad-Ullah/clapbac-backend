@@ -45,4 +45,17 @@ const deleteAnnounce = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const AnnounceController = { createAnnounce, updateAnnounce, deleteAnnounce };
+// get all announces
+const getAllAnnounces = catchAsync(async (req: Request, res: Response) => {
+  const result = await AnnounceServices.getAllAnnounces(req.query);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Announces retrieved successfully',
+    data: result.data,
+    pagination: result.pagination,
+  });
+});
+
+export const AnnounceController = { createAnnounce, updateAnnounce, deleteAnnounce, getAllAnnounces };

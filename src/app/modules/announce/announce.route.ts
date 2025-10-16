@@ -30,4 +30,7 @@ router.delete(
   AnnounceController.deleteAnnounce
 );
 
+// get all announces
+router.get('/', AnnounceController.getAllAnnounces);
+
 export const AnnounceRoutes = router;
