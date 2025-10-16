@@ -1,3 +1,4 @@
+import QueryBuilder from '../../builder/QueryBuilder';
 import { IComment } from '../comment/comment.interface';
 import { CommentServices } from '../comment/comment.service';
 import { Company } from '../company/company.model';
@@ -151,6 +152,22 @@ const getReviewByCompanyId = async (id: string) => {
   return reviews?.length > 0 ? reviewsWithComments : reviews;
 };
 
+// get all reviews
+const getAllReviews = async (query: Record<string, unknown>) => {
+  const reviewQuery = new QueryBuilder(Review.find({ isDeleted: false }), query)
+    .search(['reviewerName'])
+    .filter()
+    .paginate()
+    .sort();
+
+  const [data, pagination] = await Promise.all([
+    reviewQuery.modelQuery.lean(),
+    reviewQuery.getPaginationInfo(),
+  ]);
+
+  return { data, pagination };
+};
+
 // group review by reviewer name and get reviewer with their last review
 const getAllReviewers = async (query: Record<string, unknown>) => {
   const { searchTerm, reviewerType } = query;
@@ -231,5 +248,6 @@ export const ReviewServices = {
   createReviewToDB,
   updateReviewToDB,
   getReviewByCompanyId,
+  getAllReviews,
   getAllReviewers,
 };

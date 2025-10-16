@@ -23,6 +23,12 @@ router.patch(
   ReviewController.updateReview
 );
 
+// get all reviews
+router.get(
+  '/',
+  ReviewController.getAllReviews
+);
+
 // get review by company id
 router.get(
   '/company/:id',

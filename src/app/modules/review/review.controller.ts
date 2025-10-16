@@ -46,6 +46,19 @@ const getReviewByCompanyId = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get all reviews
+const getAllReviews = catchAsync(async (req: Request, res: Response) => {
+  const result = await ReviewServices.getAllReviews(req.query);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Reviews retrieved successfully',
+    data: result.data,
+    pagination: result.pagination,
+  });
+});
+
 // get all reviewers
 const getAllReviewers = catchAsync(async (req: Request, res: Response) => {
   const now = Date.now();
@@ -87,4 +100,4 @@ const getAllReviewers = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-export const ReviewController = { createReview, updateReview, getReviewByCompanyId, getAllReviewers };
+export const ReviewController = { createReview, updateReview, getReviewByCompanyId, getAllReviews, getAllReviewers };
