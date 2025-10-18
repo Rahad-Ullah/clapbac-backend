@@ -6,7 +6,7 @@ const updateCompanyZodSchema = z.object({
     .object({
       name: z.string().nonempty('Name cannot be empty').optional(),
       category: z.string().nonempty('Category cannot be empty').optional(),
-      image: z.string().nonempty('Image cannot be empty').optional(),
+      image: z.string().optional(),
       about: z.string().nonempty('About cannot be empty').optional(),
       address: z.string().nonempty('Address cannot be empty').optional(),
       website: z.string().nonempty('Website cannot be empty').optional(),
