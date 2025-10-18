@@ -11,4 +11,11 @@ router.get(
   AnalyticsController.getDashboardOverview
 );
 
+// get report overview
+router.get(
+  '/report-overview',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  AnalyticsController.getReportOverview
+);
+
 export const AnalyticsRoutes = router;

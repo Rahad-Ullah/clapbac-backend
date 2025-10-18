@@ -16,4 +16,16 @@ const getDashboardOverview = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const AnalyticsController = { getDashboardOverview };
+// get report overview
+const getReportOverview = catchAsync(async (req: Request, res: Response) => {
+  const result = await AnalyticsServices.getReportOverview();
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Report overview retrieved successfully',
+    data: result,
+  });
+});
+
+export const AnalyticsController = { getDashboardOverview, getReportOverview };

@@ -1,3 +1,5 @@
+import { ReportReason, ReportStatus } from '../report/report.constants';
+import { Report } from '../report/report.model';
 import { Review } from '../review/review.model';
 import { ReviewServices } from '../review/review.service';
 import { USER_ROLES } from '../user/user.constant';
@@ -113,6 +115,95 @@ const getRatingDistribution = async () => {
   return categories;
 };
 
+// ----------- get weekly report activity -----------
+const getWeeklyReportActivity = async () => {
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
+  const result = await Report.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: sevenDaysAgo },
+      },
+    },
+    {
+      $group: {
+        _id: { $dayOfWeek: '$createdAt' }, // 1=Sunday, 7=Saturday
+        count: { $sum: 1 },
+      },
+    },
+  ]);
 
-export const AnalyticsServices = { getDashboardOverview };
+  // Define day names (Sun–Sat)
+  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  const counts = Array(7).fill(0);
+
+  // Fill in counts for available days
+  result.forEach(day => {
+    const index = (day._id - 1) % 7;
+    counts[index] = day.count;
+  });
+
+  // Return chart-friendly data
+  const weeklyReportActivity = daysOfWeek.map((day, i) => ({
+    day,
+    count: counts[i],
+  }));
+
+  return weeklyReportActivity;
+};
+
+// ----------- get report overview -----------
+const getReportOverview = async () => {
+  const [overview, weekly, ratings] = await Promise.all([
+    Report.aggregate([
+      {
+        $facet: {
+          reasons: [
+            {
+              $group: {
+                _id: '$reason',
+                count: { $sum: 1 },
+              },
+            },
+          ],
+          openReports: [
+            {
+              $match: { status: ReportStatus.OPEN },
+            },
+            {
+              $count: 'count',
+            },
+          ],
+        },
+      },
+    ]),
+    getWeeklyReportActivity(),
+    getRatingDistribution(),
+  ]);
+
+  const { reasons, openReports } = overview[0];
+
+  const totalSpam =
+    reasons.find((r: { _id: ReportReason }) => r._id === ReportReason.SPAM)
+      ?.count || 0;
+  const totalHarassment =
+    reasons.find(
+      (r: { _id: ReportReason }) => r._id === ReportReason.HARASSMENT
+    )?.count || 0;
+  const totalFakeReview =
+    reasons.find((r: { _id: ReportReason }) => r._id === ReportReason.FAKE)
+      ?.count || 0;
+  const newReports = openReports[0]?.count || 0;
+
+  return {
+    totalSpam,
+    totalHarassment,
+    totalFakeReview,
+    newReports,
+    weeklyReportActivity: weekly,
+    ratingDistribution: ratings,
+  };
+};
+
+export const AnalyticsServices = { getDashboardOverview, getReportOverview };
