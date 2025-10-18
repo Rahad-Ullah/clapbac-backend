@@ -79,11 +79,11 @@ const getRatingDistribution = async () => {
         _id: {
           $switch: {
             branches: [
-              { case: { $lt: ['$reviewRating', 2] }, then: 'bad' },
+              { case: { $lte: ['$reviewRating', 2] }, then: 'bad' },
               {
                 case: {
                   $and: [
-                    { $gte: ['$reviewRating', 2] },
+                    { $gt: ['$reviewRating', 2] },
                     { $lte: ['$reviewRating', 4] },
                   ],
                 },
