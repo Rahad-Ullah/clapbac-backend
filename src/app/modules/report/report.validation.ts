@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ReportStatus } from './report.constants';
+import { ReportReason, ReportStatus } from './report.constants';
 
 // create report validation
 const createReportZodSchema = z.object({
@@ -9,11 +9,13 @@ const createReportZodSchema = z.object({
         .string({ required_error: 'Review ID is required' })
         .nonempty('Review ID cannot be empty')
         .length(24, 'Review ID must be a valid ObjectId'),
-      reason: z
-        .string({ required_error: 'Reason is required' })
-        .nonempty('Reason cannot be empty'),
+      reason: z.nativeEnum(ReportReason, {
+        errorMap: () => {
+          return { message: 'Invalid report reason' };
+        },
+      }),
     })
-    .strict('Unknown fields are not allowed'),
+    .strict(),
 });
 
 // update report validation
@@ -22,7 +24,7 @@ const updateReportZodSchema = z.object({
     .object({
       status: z.nativeEnum(ReportStatus).optional(),
     })
-    .strict('Unknown fields are not allowed'),
+    .strict(),
 });
 
 export const ReportValidations = {

@@ -3,3 +3,9 @@ export enum ReportStatus {
   RESOLVED = 'Resolved',
   REJECTED = 'Rejected',
 }
+
+export enum ReportReason {
+  SPAM = 'Spam',
+  HARASSMENT = 'Harassment',
+  FAKE = 'Fake Review',
+}

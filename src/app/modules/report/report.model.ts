@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { IReport, ReportModel } from './report.interface';
-import { ReportStatus } from './report.constants';
+import { ReportReason, ReportStatus } from './report.constants';
 
 const reportSchema = new Schema<IReport, ReportModel>(
   {
@@ -16,6 +16,7 @@ const reportSchema = new Schema<IReport, ReportModel>(
     },
     reason: {
       type: String,
+      enum: Object.values(ReportReason),
       required: true,
     },
     status: {

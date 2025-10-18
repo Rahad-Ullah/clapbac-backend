@@ -1,11 +1,11 @@
 import { Model, Types } from 'mongoose';
-import { ReportStatus } from './report.constants';
+import { ReportReason, ReportStatus } from './report.constants';
 
 export type IReport = {
   _id?: string;
   user: Types.ObjectId;
   review: Types.ObjectId;
-  reason: string;
+  reason: ReportReason;
   status: ReportStatus;
   createdAt?: Date;
   updatedAt?: Date;
