@@ -18,12 +18,15 @@ const getDashboardOverview = async () => {
 
   const weeklyReviews = await getWeeklyReviews();
 
+  const ratingDistribution = await getRatingDistribution();
+
   return {
     totalUsers,
     totalReviewers: reviewerRes?.pagination?.total,
     totalReviews,
     newUsers,
     weeklyReviews,
+    ratingDistribution,
   };
 };
 
@@ -67,6 +70,44 @@ const getWeeklyReviews = async () => {
 
   return formatted;
 };
+
+// get rating distribution
+const getRatingDistribution = async () => {
+  const result = await Review.aggregate([
+    {
+      $group: {
+        _id: {
+          $switch: {
+            branches: [
+              { case: { $lt: ['$reviewRating', 2] }, then: 'bad' },
+              {
+                case: {
+                  $and: [
+                    { $gte: ['$reviewRating', 2] },
+                    { $lte: ['$reviewRating', 4] },
+                  ],
+                },
+                then: 'average',
+              },
+              { case: { $gt: ['$reviewRating', 4] }, then: 'good' },
+            ],
+            default: 'unknown',
+          },
+        },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // Ensure all categories exist even if count = 0
+  const categories = ['bad', 'average', 'good'].map(category => {
+    const found = result.find(r => r._id === category);
+    return { category, count: found ? found.count : 0 };
+  });
+
+  return categories;
+};
+
 
 
 export const AnalyticsServices = { getDashboardOverview };
