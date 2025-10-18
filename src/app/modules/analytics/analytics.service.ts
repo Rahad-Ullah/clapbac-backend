@@ -5,8 +5,15 @@ import { User } from '../user/user.model';
 
 // ----------- get dashboard overview -----------
 const getDashboardOverview = async () => {
-  // get total users, total reviewers, total reviews and new users of the last 30 days
-  const [totalUsers, reviewerRes, totalReviews, newUsers] = await Promise.all([
+  // get total users, total reviewers, total reviews, new users of the last 30 days, weekly reviews
+  const [
+    totalUsers,
+    reviewerRes,
+    totalReviews,
+    newUsers,
+    weeklyReviews,
+    ratingDistribution,
+  ] = await Promise.all([
     User.countDocuments({ role: { $ne: USER_ROLES.SUPER_ADMIN } }).lean(),
     ReviewServices.getAllReviewers({}),
     Review.countDocuments({}).lean(),
@@ -14,11 +21,9 @@ const getDashboardOverview = async () => {
       role: { $ne: USER_ROLES.SUPER_ADMIN },
       createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
     }).lean(),
+    getWeeklyReviews(),
+    getRatingDistribution(),
   ]);
-
-  const weeklyReviews = await getWeeklyReviews();
-
-  const ratingDistribution = await getRatingDistribution();
 
   return {
     totalUsers,
