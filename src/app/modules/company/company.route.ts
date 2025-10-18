@@ -17,6 +17,13 @@ router.patch(
   CompanyController.updateCompany
 ); 
 
+// get my company
+router.get(
+  '/my-company',
+  auth(),
+  CompanyController.getMyCompany
+)
+
 // get single company
 router.get(
   '/:id',

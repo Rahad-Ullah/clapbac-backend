@@ -34,6 +34,18 @@ const getSingleById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get my company
+const getMyCompany = catchAsync(async (req: Request, res: Response) => {
+  const result = await CompanyServices.getMyCompany(req.user.id);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Company retrieved successfully!',
+    data: result,
+  });
+})
+
 // get all companies
 const getAllCompanies = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -49,4 +61,4 @@ const getAllCompanies = catchAsync(
   }
 );
 
-export const CompanyController = { updateCompany, getSingleById, getAllCompanies };
+export const CompanyController = { updateCompany, getSingleById, getMyCompany, getAllCompanies };
