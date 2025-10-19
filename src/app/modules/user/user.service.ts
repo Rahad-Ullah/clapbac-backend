@@ -12,6 +12,56 @@ import mongoose, { Types } from 'mongoose';
 import { Company } from '../company/company.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 
+// -------- create user --------
+const createUserToDB = async (payload: Partial<IUser>) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // 1. Create user with default role=USER
+    const [createUser] = await User.create([{
+      ...payload,
+      role: USER_ROLES.USER,
+    }], { session });
+
+    // 2. Generate OTP for verification
+    const otp = generateOTP(6);
+    const values = {
+      name: createUser.firstName,
+      otp,
+      email: createUser.email!,
+    };
+    const createAccountTemplate = emailTemplate.createAccount(values);
+
+    // 3. Save authentication info
+    const authentication = {
+      oneTimeCode: otp,
+      expireAt: new Date(Date.now() + 3 * 60000), // expires in 3 min
+    };
+
+    await User.findByIdAndUpdate(
+      createUser._id,
+      { $set: { authentication } },
+      { session }
+    );
+
+    // 4. Commit transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    // 5. Send email after successful commit
+    emailHelper.sendEmail(createAccountTemplate);
+
+    return createUser;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};
+
+
+// -------- create owner --------
 const createOwnerToDB = async (
   payload: Partial<IUser> & {
     companyName: string;
@@ -196,6 +246,7 @@ const getAllUsersFromDB = async (query: Record<string, unknown>) => {
 };
 
 export const UserService = {
+  createUserToDB,
   createOwnerToDB,
   updateUserByIdToDB,
   updateProfileToDB,

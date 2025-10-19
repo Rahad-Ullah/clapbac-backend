@@ -7,6 +7,13 @@ import { USER_ROLES } from './user.constant';
 import fileUploadHandler from '../../middlewares/fileUploadHandler';
 const router = express.Router();
 
+// create user
+router.post(
+  '/create-user',
+  validateRequest(UserValidation.createUserZodSchema),
+  UserController.createUser
+);
+
 // create business owner
 router.post(
   '/create-owner',
@@ -19,7 +26,7 @@ router.patch(
   '/profile',
   auth(),
   fileUploadHandler(),
-  validateRequest(UserValidation.updateUserZodSchema),
+  validateRequest(UserValidation.updateOwnerZodSchema),
   UserController.updateProfile
 );
 

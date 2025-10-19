@@ -5,6 +5,23 @@ import { getSingleFilePath } from '../../../shared/getFilePath';
 import sendResponse from '../../../shared/sendResponse';
 import { UserService } from './user.service';
 
+// create user
+const createUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { ...userData } = req.body;
+    const result = await UserService.createUserToDB(userData);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message:
+        'Account created successfully. Please check your email to verify.',
+      data: result,
+    });
+  }
+);
+
+// create owner
 const createOwner = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { ...userData } = req.body;
@@ -58,19 +75,17 @@ const updateProfile = catchAsync(
 );
 
 // delete user by id
-const deleteUserById = catchAsync(
-  async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const result = await UserService.deleteUserByIdFromDB(id);
+const deleteUserById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await UserService.deleteUserByIdFromDB(id);
 
-    sendResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: 'User deleted successfully',
-      data: result,
-    });
-  }
-);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'User deleted successfully',
+    data: result,
+  });
+});
 
 // get user profile
 const getUserProfile = catchAsync(async (req: Request, res: Response) => {
@@ -111,4 +126,13 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const UserController = { createOwner, updateUserById, updateProfile, deleteUserById, getUserProfile, getUserById, getAllUsers };
+export const UserController = {
+  createUser,
+  createOwner,
+  updateUserById,
+  updateProfile,
+  deleteUserById,
+  getUserProfile,
+  getUserById,
+  getAllUsers,
+};

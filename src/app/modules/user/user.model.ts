@@ -35,7 +35,7 @@ const userSchema = new Schema<IUser, UserModal>(
     },
     phone: {
       type: String,
-      required: true,
+      default: '',
     },
     username: {
       type: String,
