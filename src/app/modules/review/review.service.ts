@@ -2,6 +2,10 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { IComment } from '../comment/comment.interface';
 import { CommentServices } from '../comment/comment.service';
 import { Company } from '../company/company.model';
+import {
+  controversialReviewerTypes,
+  hilariousReviewerTypes,
+} from './review.constant';
 import { IReview } from './review.interface';
 import { Review } from './review.model';
 
@@ -186,7 +190,7 @@ const getAllReviews = async (query: Record<string, unknown>) => {
 
 // group review by reviewer name and get reviewer with their last review
 const getAllReviewers = async (query: Record<string, unknown>) => {
-  const { searchTerm, reviewerType, sortBy } = query;
+  const { searchTerm, reviewerType, reviewerIndex } = query;
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 10;
 
@@ -208,6 +212,24 @@ const getAllReviewers = async (query: Record<string, unknown>) => {
     pipeline.push({ $match: { reviewerType } });
   }
 
+  // filter by reviewerIndex
+  switch (reviewerIndex) {
+    case 'mostControversial':
+      pipeline.push({
+        $match: { reviewerType: { $in: [...controversialReviewerTypes] } },
+      });
+      break;
+
+    case 'mostHilarious':
+      pipeline.push({
+        $match: { reviewerType: { $in: [...hilariousReviewerTypes] } },
+      });
+      break;
+
+    default:
+      break;
+  }
+
   // Sort by createdAt (latest first)
   pipeline.push({ $sort: { createdAt: -1 } });
 
@@ -224,7 +246,7 @@ const getAllReviewers = async (query: Record<string, unknown>) => {
 
   // Sort stage
   const sortStage: Record<string, 1 | -1> = {};
-  switch (sortBy) {
+  switch (reviewerIndex) {
     case 'mostHighlyRated':
       sortStage.clapbacRating = -1;
       break;
