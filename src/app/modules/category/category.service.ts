@@ -52,6 +52,19 @@ const getAllCategories = async (query: Record<string, unknown>) => {
     .sort();
 
   const result = await categoryQuery.modelQuery;
+
+  // update category search count
+  if (
+    query?.searchTerm &&
+    typeof query?.searchTerm === 'string' &&
+    query?.searchTerm.trim() !== '' &&
+    result.length > 0
+  ) {
+    await Category.updateMany(
+      { _id: { $in: result.map(category => category._id) } },
+      { $inc: { searchCount: 1 } }
+    );
+  }
   return result;
 };
 

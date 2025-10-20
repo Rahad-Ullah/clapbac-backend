@@ -5,7 +5,8 @@ export type ICategory = {
   name: string;
   icon: string;
   relatedTo: Types.ObjectId[];
-  isDeleted?: boolean;
+  searchCount: number;
+  isDeleted: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 };

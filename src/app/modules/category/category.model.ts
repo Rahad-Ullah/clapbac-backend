@@ -6,6 +6,7 @@ const categorySchema = new Schema<ICategory, CategoryModel>(
     name: { type: String, required: true },
     icon: { type: String, required: true },
     relatedTo: { type: [Schema.Types.ObjectId], ref: 'Category', default: [] },
+    searchCount: { type: Number, default: 0 },
     isDeleted: { type: Boolean, default: false },
   },
   {
