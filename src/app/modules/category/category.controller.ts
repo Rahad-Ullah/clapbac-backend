@@ -72,9 +72,24 @@ const getAllCategories = catchAsync(
   }
 );
 
+// get popular categories controller
+const getPopularCategories = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await CategoryServices.getPopularCategories(req.query);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Categories retrieved successfully',
+      data: result,
+    });
+  }
+);
+
 export const CategoryController = {
   createCategory,
   updateCategory,
   getSingleCategory,
   getAllCategories,
+  getPopularCategories,
 };

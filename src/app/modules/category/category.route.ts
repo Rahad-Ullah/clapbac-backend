@@ -26,6 +26,12 @@ router.patch(
   CategoryController.updateCategory
 );
 
+// get popular categories route
+router.get(
+  '/popular',
+  CategoryController.getPopularCategories
+);
+
 // get single category route
 router.get(
   '/:id',

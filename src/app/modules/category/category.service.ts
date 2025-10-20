@@ -45,7 +45,9 @@ const getSingleCategoryById = async (id: string) => {
 // get all categories
 const getAllCategories = async (query: Record<string, unknown>) => {
   const categoryQuery = new QueryBuilder(
-    Category.find().populate('relatedTo', 'name icon').lean(),
+    Category.find({ isDeleted: false })
+      .populate('relatedTo', 'name icon')
+      .lean(),
     query
   )
     .search(['name'])
@@ -68,9 +70,18 @@ const getAllCategories = async (query: Record<string, unknown>) => {
   return result;
 };
 
+// popular searched categories
+const getPopularCategories = async (query: Record<string, unknown>) => {
+  const result = await Category.find({ isDeleted: false })
+    .sort({ searchCount: -1 })
+    .limit(Number(query.limit) || 5);
+  return result;
+};
+
 export const CategoryServices = {
   createCategoryToDB,
   updateCategoryToDB,
   getSingleCategoryById,
   getAllCategories,
+  getPopularCategories,
 };
