@@ -13,6 +13,7 @@ import { ReportRoutes } from '../app/modules/report/report.route';
 import { CommentRoutes } from '../app/modules/comment/comment.route';
 import { AnnounceRoutes } from '../app/modules/announce/announce.route';
 import { AnalyticsRoutes } from '../app/modules/analytics/analytics.route';
+import { RecentReviewsRoutes } from '../app/modules/recent-reviews/recent-reviews.route';
 const router = express.Router();
 
 const apiRoutes = [
@@ -39,6 +40,10 @@ const apiRoutes = [
   {
     path: '/reviews',
     route: ReviewRoutes,
+  },
+  {
+    path: '/recent-reviews',
+    route: RecentReviewsRoutes,
   },
   {
     path: '/comments',

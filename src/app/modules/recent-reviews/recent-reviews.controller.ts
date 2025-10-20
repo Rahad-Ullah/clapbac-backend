@@ -1,4 +1,22 @@
-import { Request, Response, NextFunction } from 'express';
-import { RecentreviewsServices } from './recent-reviews.service';
+import { Request, Response } from 'express';
+import catchAsync from '../../../shared/catchAsync';
+import { RecentReviewsServices } from './recent-reviews.service';
+import sendResponse from '../../../shared/sendResponse';
+import { StatusCodes } from 'http-status-codes';
 
-export const RecentreviewsController = { };
+// create recent reviews
+const createRecentReviews = catchAsync(async (req: Request, res: Response) => {
+  const result = await RecentReviewsServices.createRecentReviews({
+    ...req.body,
+    user: req.user.id,
+  });
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Recent reviews created successfully!',
+    data: result,
+  });
+});
+
+export const RecentReviewsController = { createRecentReviews };
