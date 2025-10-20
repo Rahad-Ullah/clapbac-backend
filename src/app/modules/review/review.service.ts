@@ -186,7 +186,7 @@ const getAllReviews = async (query: Record<string, unknown>) => {
 
 // group review by reviewer name and get reviewer with their last review
 const getAllReviewers = async (query: Record<string, unknown>) => {
-  const { searchTerm, reviewerType } = query;
+  const { searchTerm, reviewerType, sortBy } = query;
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 10;
 
@@ -221,6 +221,24 @@ const getAllReviewers = async (query: Record<string, unknown>) => {
 
   // Unwrap latestReview
   pipeline.push({ $replaceRoot: { newRoot: '$latestReview' } });
+
+  // Sort stage
+  const sortStage: Record<string, 1 | -1> = {};
+  switch (sortBy) {
+    case 'mostHighlyRated':
+      sortStage.clapbacRating = -1;
+      break;
+    case 'mostFlagged':
+      sortStage.helpfulCount = -1;
+      break;
+    case 'alphabetical':
+      sortStage.reviewerName = 1;
+      break;
+    default:
+      sortStage.createdAt = -1;
+      break;
+  }
+  pipeline.push({ $sort: sortStage });
 
   // Use $facet to split into data + count in a single query
   pipeline.push({
