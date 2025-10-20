@@ -35,8 +35,8 @@ const createRecentCompanies = async (
 const getUserRecentCompanies = async (id: string) => {
     const result = await RecentCompanies.find({ user: id }).sort({ updatedAt: -1 }).populate('company').limit(10);
     // send company details only
-    const formatedResult = result.map((item) => item.company);
-    return formatedResult;
+    const formattedResult = result.map((item) => item.company);
+    return formattedResult;
 };
 
 export const RecentCompaniesServices = { createRecentCompanies, getUserRecentCompanies };

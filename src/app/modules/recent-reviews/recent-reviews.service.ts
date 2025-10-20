@@ -40,4 +40,18 @@ const createRecentReviews = async (payload: IRecentReviews) => {
   return result;
 };
 
-export const RecentReviewsServices = { createRecentReviews };
+// ---------- get recent reviews services here ----------
+const getUserRecentReviews = async (id: string) => {
+  const result = await RecentReviews.find({ user: id })
+    .sort({ updatedAt: -1 })
+    .populate({ path: 'review', populate: { path: 'company', select: 'name logo' } })
+    .limit(10);
+  // send review details only
+  const formattedResult = result.map(item => item.review);
+  return formattedResult;
+};
+
+export const RecentReviewsServices = {
+  createRecentReviews,
+  getUserRecentReviews,
+};

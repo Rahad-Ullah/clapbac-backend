@@ -14,4 +14,10 @@ router.post(
   RecentReviewsController.createRecentReviews
 );
 
+router.get(
+  '/',
+  auth(USER_ROLES.USER, USER_ROLES.OWNER),
+  RecentReviewsController.getRecentReviews
+);
+
 export const RecentReviewsRoutes = router;

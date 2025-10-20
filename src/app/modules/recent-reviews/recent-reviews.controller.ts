@@ -19,4 +19,16 @@ const createRecentReviews = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const RecentReviewsController = { createRecentReviews };
+// get recent reviews
+const getRecentReviews = catchAsync(async (req: Request, res: Response) => {
+  const result = await RecentReviewsServices.getUserRecentReviews(req.user.id)
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Recent reviews retrieved successfully!',
+    data: result,
+  });
+});
+
+export const RecentReviewsController = { createRecentReviews, getRecentReviews };
