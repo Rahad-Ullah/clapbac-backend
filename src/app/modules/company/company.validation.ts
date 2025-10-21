@@ -4,14 +4,14 @@ import { z } from 'zod';
 const updateCompanyZodSchema = z.object({
   body: z
     .object({
-      name: z.string().nonempty('Name cannot be empty').optional(),
-      category: z.string().nonempty('Category cannot be empty').optional(),
+      name: z.string().optional(),
+      category: z.string().optional(),
       image: z.string().optional(),
-      about: z.string().nonempty('About cannot be empty').optional(),
-      address: z.string().nonempty('Address cannot be empty').optional(),
-      website: z.string().nonempty('Website cannot be empty').optional(),
-      email: z.string().email().nonempty('Email cannot be empty').optional(),
-      phone: z.string().nonempty('Phone cannot be empty').optional(),
+      about: z.string().optional(),
+      address: z.string().optional(),
+      website: z.string().optional(),
+      email: z.string().email().optional(),
+      phone: z.string().optional(),
       isFeatured: z.boolean().optional(),
     })
     .strict('Unnecessary fields are not allowed'),
