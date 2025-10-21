@@ -104,6 +104,9 @@ const updateReviewZodSchema = z.object({
         })
         .nonempty({ message: 'Reviewer consequence cannot be empty' })
         .optional(),
+      helpfulCount: z
+        .number({ required_error: 'Helpful count is required' })
+        .optional(),
     })
     .strict(),
 });
