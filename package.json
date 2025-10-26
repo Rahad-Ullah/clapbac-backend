@@ -21,7 +21,10 @@
     "mongodb",
     "restapi"
   ],
-  "author": "Rahad-Ullah",
+  "author": {
+    "name": "Rahad Ullah",
+    "email": "rahadullah10@gmail.com"
+  },
   "license": "ISC",
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
