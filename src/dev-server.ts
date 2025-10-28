@@ -9,6 +9,8 @@ import { errorLogger, logger } from './shared/logger';
 
 //uncaught exception
 import process from 'process';
+import Redis from 'ioredis';
+import { startAnnounceCron } from './app/modules/announce/announce.schedule';
 
 process.on('uncaughtException', error => {
   errorLogger.error('UnhandleException Detected', error);
@@ -25,12 +27,12 @@ async function main() {
     await seedSuperAdmin();
 
     const port =
-      typeof config.port_dev === 'number' ? config.port_dev : Number(config.port_dev);
+      typeof config.port_dev === 'number'
+        ? config.port_dev
+        : Number(config.port_dev);
 
     server = app.listen(port, config.ip_address as string, () => {
-      logger.info(
-        colors.yellow(`♻️  Application listening on port:${port}`)
-      );
+      logger.info(colors.yellow(`♻️  Application listening on port:${port}`));
     });
 
     //socket
@@ -43,6 +45,24 @@ async function main() {
     socketHelper.socket(io);
     //@ts-ignore
     global.io = io;
+
+    //redis connection
+    const redis = new Redis({
+      host: '127.0.0.1', // or your container/remote IP
+      port: 6379,
+      connectTimeout: 10000, // optional: 10s
+    });
+    redis.on('connect', () => {
+      logger.info(colors.green('🛜  Redis connected successfully'));
+    });
+    redis.on('error', err => {
+      console.error(err);
+      errorLogger.error(colors.red('❌ Failed to connect Redis'));
+    });
+
+    // Start cron job
+    startAnnounceCron(redis);
+    
   } catch (error) {
     console.error(error);
     errorLogger.error(colors.red('🤢 Failed to connect Database'));
