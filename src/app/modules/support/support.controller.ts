@@ -12,7 +12,7 @@ const createSupport = catchAsync(
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: 'Support created successfully',
+      message: 'Thank you for your feedback',
       data: result,
     });
   }

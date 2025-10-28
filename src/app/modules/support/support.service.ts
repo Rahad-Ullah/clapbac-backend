@@ -6,6 +6,15 @@ import { Support } from './support.model';
 
 // create support
 const createSupport = async (payload: ISupport): Promise<ISupport> => {
+  // check if the user already submitted a support request within last 24 hours
+  const isExistSupport = await Support.findOne({
+    email: payload.email,
+    createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+  });
+  if (isExistSupport) {
+    throw new Error('You already submitted a support request');
+  }
+
   const result = await Support.create(payload);
 
   // send email to admin about new support request
