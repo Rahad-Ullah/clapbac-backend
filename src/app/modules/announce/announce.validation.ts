@@ -16,6 +16,15 @@ const createAnnounceZodSchema = z.object({
         .url('Invalid URL format')
         .nonempty('URL cannot be empty'),
       audience: z.nativeEnum(AnnounceAudience),
+      scheduleDate: z
+        .string()
+        .datetime('Invalid date format')
+        .refine(
+          date =>
+            date === '' || new Date(date as string).getTime() > Date.now(),
+          'Date must be in the future'
+        )
+        .optional(),
       status: z.nativeEnum(AnnounceStatus).default(AnnounceStatus.DRAFT),
     })
     .strict('Unknown fields are not allowed'),
@@ -39,6 +48,15 @@ const updateAnnounceZodSchema = z.object({
         .nonempty('URL cannot be empty')
         .optional(),
       audience: z.nativeEnum(AnnounceAudience).optional(),
+      scheduleDate: z
+        .string()
+        .datetime('Invalid date format')
+        .refine(
+          date =>
+            date === '' || new Date(date as string).getTime() > Date.now(),
+          'Date must be in the future'
+        )
+        .optional(),
       status: z.nativeEnum(AnnounceStatus).optional(),
     })
     .strict('Unknown fields are not allowed'),

@@ -18,6 +18,7 @@ const announceSchema = new Schema<IAnnounce, AnnounceModel>(
       default: AnnounceStatus.DRAFT,
     },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    scheduleDate: { type: Date },
     isDeleted: { type: Boolean, default: false },
   },
   {

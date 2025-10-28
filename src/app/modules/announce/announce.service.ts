@@ -1,13 +1,22 @@
 import QueryBuilder from '../../builder/QueryBuilder';
+import { AnnounceStatus } from './announce.constants';
 import { IAnnounce } from './announce.interface';
 import { Announce } from './announce.model';
 
 // ----------- create announce service -----------
 const createAnnounceToDB = async (payload: IAnnounce): Promise<IAnnounce> => {
   // check if announce already exists
-  const existingAnnounce = await Announce.findOne({ title: payload.title });
+  const existingAnnounce = await Announce.findOne({
+    title: payload.title,
+    audience: payload.audience,
+    status: { $ne: AnnounceStatus.ARCHIVED },
+  });
   if (existingAnnounce) {
     throw new Error('Announce already exists');
+  }
+
+  if (payload.scheduleDate) {
+    payload.status = AnnounceStatus.SCHEDULED;
   }
 
   const result = await Announce.create(payload);
@@ -21,13 +30,20 @@ const updateAnnounce = async (id: string, payload: Partial<IAnnounce>) => {
   if (!existingAnnounce) {
     throw new Error('Announce not found');
   }
+  if (existingAnnounce.status === AnnounceStatus.ARCHIVED) {
+    throw new Error('Announce is archived. Cannot update.');
+  }
+
+  if (payload.scheduleDate) {
+    payload.status = AnnounceStatus.SCHEDULED;
+  }
 
   const result = await Announce.findByIdAndUpdate(id, payload, { new: true });
   return result;
 };
 
-// ----------- delete announce -----------
-const deleteAnnounce = async (id: string) => {
+// ----------- archive announce -----------
+const archiveAnnounce = async (id: string) => {
   // check if announce exists
   const existingAnnounce = await Announce.findById(id);
   if (!existingAnnounce) {
@@ -36,7 +52,7 @@ const deleteAnnounce = async (id: string) => {
 
   const result = await Announce.findByIdAndUpdate(
     id,
-    { isDeleted: true },
+    { status: AnnounceStatus.ARCHIVED },
     { new: true }
   );
   return result;
@@ -64,6 +80,6 @@ const getAllAnnounces = async (query: Record<string, unknown>) => {
 export const AnnounceServices = {
   createAnnounceToDB,
   updateAnnounce,
-  deleteAnnounce,
+  archiveAnnounce,
   getAllAnnounces,
 };

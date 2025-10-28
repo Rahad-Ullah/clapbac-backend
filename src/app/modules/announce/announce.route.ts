@@ -27,7 +27,7 @@ router.patch(
 router.delete(
   '/:id',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
-  AnnounceController.deleteAnnounce
+  AnnounceController.archiveAnnounce
 );
 
 // get all announces
