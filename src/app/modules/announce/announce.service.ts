@@ -14,12 +14,24 @@ const createAnnounceToDB = async (payload: IAnnounce): Promise<IAnnounce> => {
   if (existingAnnounce) {
     throw new Error('Announce already exists');
   }
-
+  // set status as scheduled
   if (payload.scheduleDate) {
     payload.status = AnnounceStatus.SCHEDULED;
   }
 
   const result = await Announce.create(payload);
+
+  // when publishing, update other active announces status to draft
+  if (payload.status === AnnounceStatus.ACTIVE) {
+    await Announce.updateMany(
+      {
+        audience: payload.audience,
+        status: { $eq: AnnounceStatus.ACTIVE },
+      },
+      { status: AnnounceStatus.DRAFT }
+    );
+  }
+
   return result;
 };
 
