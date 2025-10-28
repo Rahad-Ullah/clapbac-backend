@@ -1,5 +1,5 @@
 import QueryBuilder from '../../builder/QueryBuilder';
-import { AnnounceStatus } from './announce.constants';
+import { AnnounceAudience, AnnounceStatus } from './announce.constants';
 import { IAnnounce } from './announce.interface';
 import { Announce } from './announce.model';
 
@@ -82,6 +82,14 @@ const archiveAnnounce = async (id: string) => {
   return result;
 };
 
+// get active announce
+const getActiveAnnounce = async (audience: string) => {
+  return Announce.findOne({
+    audience,
+    status: AnnounceStatus.ACTIVE,
+  }).lean();
+};
+
 // get all announces
 const getAllAnnounces = async (query: Record<string, unknown>) => {
   const announceQuery = new QueryBuilder(
@@ -105,5 +113,6 @@ export const AnnounceServices = {
   createAnnounceToDB,
   updateAnnounce,
   archiveAnnounce,
+  getActiveAnnounce,
   getAllAnnounces,
 };

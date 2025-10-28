@@ -3,6 +3,7 @@ import { AnnounceServices } from './announce.service';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { StatusCodes } from 'http-status-codes';
+import { AnnounceAudience } from './announce.constants';
 
 // create announce controller
 const createAnnounce = catchAsync(async (req: Request, res: Response) => {
@@ -45,6 +46,20 @@ const archiveAnnounce = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get active announce
+const getActiveAnnounce = catchAsync(async (req: Request, res: Response) => {
+  const result = await AnnounceServices.getActiveAnnounce(
+    (req.params.audience as AnnounceAudience) || AnnounceAudience.ALL
+  );
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Announce retrieved successfully',
+    data: result,
+  });
+});
+
 // get all announces
 const getAllAnnounces = catchAsync(async (req: Request, res: Response) => {
   const result = await AnnounceServices.getAllAnnounces(req.query);
@@ -62,5 +77,6 @@ export const AnnounceController = {
   createAnnounce,
   updateAnnounce,
   archiveAnnounce,
+  getActiveAnnounce,
   getAllAnnounces,
 };

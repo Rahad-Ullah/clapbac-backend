@@ -30,6 +30,9 @@ router.delete(
   AnnounceController.archiveAnnounce
 );
 
+// get active announce
+router.get('/active/:audience', AnnounceController.getActiveAnnounce);
+
 // get all announces
 router.get('/', AnnounceController.getAllAnnounces);
 
