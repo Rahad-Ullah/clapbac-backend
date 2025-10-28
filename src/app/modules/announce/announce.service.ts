@@ -51,6 +51,18 @@ const updateAnnounce = async (id: string, payload: Partial<IAnnounce>) => {
   }
 
   const result = await Announce.findByIdAndUpdate(id, payload, { new: true });
+
+  // when publishing, update other active announces status to draft
+  if (payload.status === AnnounceStatus.ACTIVE) {
+    await Announce.updateMany(
+      {
+        audience: payload.audience,
+        status: { $eq: AnnounceStatus.ACTIVE },
+      },
+      { status: AnnounceStatus.DRAFT }
+    );
+  }
+
   return result;
 };
 
