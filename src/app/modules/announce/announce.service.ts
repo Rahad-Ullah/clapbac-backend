@@ -1,5 +1,6 @@
 import QueryBuilder from '../../builder/QueryBuilder';
-import { AnnounceAudience, AnnounceStatus } from './announce.constants';
+import { AnnounceStatus } from './announce.constants';
+import { redis } from './announce.controller';
 import { IAnnounce } from './announce.interface';
 import { Announce } from './announce.model';
 
@@ -27,9 +28,13 @@ const createAnnounceToDB = async (payload: IAnnounce): Promise<IAnnounce> => {
       {
         audience: payload.audience,
         status: { $eq: AnnounceStatus.ACTIVE },
+        _id: { $ne: result._id },
       },
       { status: AnnounceStatus.DRAFT }
     );
+
+    // update redis cache as well
+    await redis.del(`announce:active:${payload.audience}`);
   }
 
   return result;
@@ -58,9 +63,13 @@ const updateAnnounce = async (id: string, payload: Partial<IAnnounce>) => {
       {
         audience: payload.audience,
         status: { $eq: AnnounceStatus.ACTIVE },
+        _id: { $ne: id },
       },
       { status: AnnounceStatus.DRAFT }
     );
+
+    // update redis cache as well
+    await redis.del(`announce:active:${payload.audience}`);
   }
 
   return result;

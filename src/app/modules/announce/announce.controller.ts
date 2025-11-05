@@ -5,7 +5,7 @@ import sendResponse from '../../../shared/sendResponse';
 import { StatusCodes } from 'http-status-codes';
 import { AnnounceAudience } from './announce.constants';
 import Redis from 'ioredis';
-const redis = new Redis(); // defaults to localhost:6379
+export const redis = new Redis(); // defaults to localhost:6379
 
 // create announce controller
 const createAnnounce = catchAsync(async (req: Request, res: Response) => {
@@ -63,7 +63,7 @@ const getActiveAnnounce = catchAsync(async (req: Request, res: Response) => {
     data = await AnnounceServices.getActiveAnnounce(audience);
     message = 'Announce retrieved successfully';
 
-    await redis.set(`announce:active:${audience}`, JSON.stringify(data));
+    await redis.set(`announce:active:${audience}`, JSON.stringify(data), 'EX', 60);
   }
 
   sendResponse(res, {
