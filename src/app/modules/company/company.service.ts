@@ -22,6 +22,23 @@ const updateCompany = async (
   return updatedCompany;
 };
 
+// toggle featured company service
+const toggleFeaturedCompany = async (
+  id: string
+) => {
+  // check if the company exists
+  const existingCompany = await Company.findById(id);
+  if (!existingCompany) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Company not found!');
+  }
+
+  // update the company
+  const result = await Company.findByIdAndUpdate(id, { isFeatured: !existingCompany.isFeatured }, {
+    new: true,
+  });
+  return result;
+};
+
 // get single by id
 const getSingleById = async (id: string) => {
   const result = await Company.findById(id).populate('category', 'name icon').lean()
@@ -61,4 +78,4 @@ const getAllCompanies = async (query: Record<string, unknown>) => {
   return { data, pagination };
 };
 
-export const CompanyServices = { updateCompany, getSingleById, getMyCompany, getAllCompanies };
+export const CompanyServices = { updateCompany, toggleFeaturedCompany, getSingleById, getMyCompany, getAllCompanies };

@@ -17,6 +17,13 @@ router.patch(
   CompanyController.updateCompany
 ); 
 
+// toggle featured company
+router.patch(
+  '/featured/:id',
+  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  CompanyController.toggleFeaturedCompany
+);
+
 // get my company
 router.get(
   '/my-company',

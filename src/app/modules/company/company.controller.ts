@@ -22,6 +22,18 @@ const updateCompany = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// toggle featured company
+const toggleFeaturedCompany = catchAsync(async (req: Request, res: Response) => {
+  const result = await CompanyServices.toggleFeaturedCompany(req.params.id);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Company updated successfully!',
+    data: result,
+  });
+});
+
 // get single by id
 const getSingleById = catchAsync(async (req: Request, res: Response) => {
   const result = await CompanyServices.getSingleById(req.params.id);
@@ -61,4 +73,4 @@ const getAllCompanies = catchAsync(
   }
 );
 
-export const CompanyController = { updateCompany, getSingleById, getMyCompany, getAllCompanies };
+export const CompanyController = { updateCompany, toggleFeaturedCompany, getSingleById, getMyCompany, getAllCompanies };

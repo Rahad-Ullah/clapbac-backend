@@ -12,7 +12,6 @@ const updateCompanyZodSchema = z.object({
       website: z.string().optional(),
       email: z.string().email().optional(),
       phone: z.string().optional(),
-      isFeatured: z.boolean().optional(),
     })
     .strict('Unnecessary fields are not allowed'),
 });
