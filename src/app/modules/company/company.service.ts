@@ -62,7 +62,13 @@ const getMyCompany = async (userId: string) => {
 // get all companies with pagination and search
 const getAllCompanies = async (query: Record<string, unknown>) => {
   const companyQuery = new QueryBuilder(
-    Company.find().populate('category', 'name icon'),
+    Company.find().populate([
+      { path: 'category', select: 'name icon' },
+      {
+        path: 'owner',
+        select: 'firstName lastName username email title image',
+      },
+    ]),
     query
   )
     .search(['name'])
