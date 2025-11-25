@@ -135,8 +135,9 @@ const updateReviewToDB = async (
 // get review by company id
 const getReviewByCompanyId = async (id: string) => {
   const reviews = await Review.find({ company: id })
-    .populate('user', 'name title image')
+    .populate('user', 'firstName lastName email title image')
     .populate('company', 'name')
+    .sort({ createdAt: -1 })
     .lean();
 
   let reviewsWithComments;
