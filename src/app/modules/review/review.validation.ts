@@ -1,5 +1,16 @@
 import { z } from 'zod';
 
+// extract review info
+const extractReviewZodSchema = z.object({
+  body: z
+    .object({
+      text: z
+        .string({ required_error: 'Review text is required' })
+        .nonempty({ message: 'Review text cannot be empty' }),
+    })
+    .strict(),
+});
+
 // create review validation
 const createReviewZodSchema = z.object({
   body: z
@@ -111,4 +122,4 @@ const updateReviewZodSchema = z.object({
     .strict(),
 });
 
-export const ReviewValidations = { createReviewZodSchema, updateReviewZodSchema };
+export const ReviewValidations = { extractReviewZodSchema, createReviewZodSchema, updateReviewZodSchema };

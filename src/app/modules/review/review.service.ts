@@ -1,3 +1,4 @@
+import OpenAI from 'openai';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { IComment } from '../comment/comment.interface';
 import { CommentServices } from '../comment/comment.service';
@@ -8,6 +9,73 @@ import {
 } from './review.constant';
 import { IReview } from './review.interface';
 import { Review } from './review.model';
+import config from '../../../config';
+
+const client = new OpenAI({
+  apiKey: config.openai.api_key,
+});
+
+interface ReviewExtraction {
+  reviewerName: string;
+  reviewerAddress: string;
+  experienceDate: string;
+  reviewMessage: string;
+}
+
+// extract review info by open ai
+const extractReview = async (reviewText: string): Promise<ReviewExtraction> => {
+  const response = await client.responses.create({
+    model: 'gpt-5.2',
+    input: [
+      {
+        role: 'system',
+        content: `
+        Extract ONLY the following fields from the review text:
+        reviewerName, reviewerAddress, experienceDate, reviewMessage
+        Return all fields as JSON. Use empty string "" if missing.
+        `,
+      },
+      { role: 'user', content: reviewText },
+    ],
+    text: {
+      format: {
+        type: 'json_schema',
+        name: 'review_extraction',
+        schema: {
+          type: 'object',
+          properties: {
+            reviewerName: { type: 'string' },
+            reviewerAddress: { type: 'string' },
+            experienceDate: { type: 'string' },
+            reviewMessage: { type: 'string' },
+          },
+          required: [
+            'reviewerName',
+            'reviewerAddress',
+            'experienceDate',
+            'reviewMessage',
+          ],
+          additionalProperties: false,
+        },
+      },
+    },
+  });
+
+  // Manual extraction from response.output
+  const rawText = (response.output?.[0] as any)?.content?.[0]?.text;
+
+  if (!rawText) {
+    return {
+      reviewerName: '',
+      reviewerAddress: '',
+      experienceDate: '',
+      reviewMessage: '',
+    };
+  }
+
+  const parsedData: ReviewExtraction = JSON.parse(rawText);
+  return parsedData;
+};
 
 // create review service
 const createReviewToDB = async (payload: IReview): Promise<IReview> => {
@@ -302,6 +370,7 @@ const getAllReviewers = async (query: Record<string, unknown>) => {
 };
 
 export const ReviewServices = {
+  extractReview,
   createReviewToDB,
   updateReviewToDB,
   getReviewByCompanyId,

@@ -7,6 +7,14 @@ import { ReviewValidations } from './review.validation';
 
 const router = express.Router();
 
+// extract review info by ai
+router.post(
+  '/extract',
+  auth(USER_ROLES.OWNER),
+  validateRequest(ReviewValidations.extractReviewZodSchema),
+  ReviewController.extractReviewByAi
+);
+
 // create review
 router.post(
   '/create',

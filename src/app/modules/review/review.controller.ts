@@ -4,6 +4,21 @@ import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { cachedReviewers } from '../../../DB/cache';
 
+// extract review info by ai
+const extractReviewByAi = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const payload = { ...req.body };
+    const result = await ReviewServices.extractReview(payload.text);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Review extracted successfully',
+      data: result,
+    });
+  }
+);
+
 // create review controller
 const createReview = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -100,4 +115,4 @@ const getAllReviewers = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-export const ReviewController = { createReview, updateReview, getReviewByCompanyId, getAllReviews, getAllReviewers };
+export const ReviewController = { extractReviewByAi, createReview, updateReview, getReviewByCompanyId, getAllReviews, getAllReviewers };
