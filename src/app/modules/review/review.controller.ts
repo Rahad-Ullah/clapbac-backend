@@ -3,12 +3,50 @@ import { ReviewServices } from './review.service';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { cachedReviewers } from '../../../DB/cache';
+import { redis } from '../announce/announce.controller';
+import { reviewCacheKey } from '../../../util/reviewCacheKey';
 
-// extract review info by ai
+// extract review info by ai with redis caching
 const extractReviewByAi = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const payload = { ...req.body };
-    const result = await ReviewServices.extractReview(payload.text);
+    const { text } = req.body;
+
+    const cacheKey = reviewCacheKey(text);
+    const lockKey = `${cacheKey}:lock`;
+
+    // Check Redis cache
+    const cached = await redis.get(cacheKey);
+    if (cached)
+      return sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Review extracted successfully (cache)',
+        data: JSON.parse(cached),
+      });
+
+    // Try to lock
+    const locked = await redis.set(lockKey, '1', 'EX', 15, 'NX');
+    if (!locked) {
+      // Someone else is processing → wait & retry
+      await new Promise(r => setTimeout(r, 500));
+      const retry = await redis.get(cacheKey);
+      if (retry)
+        return sendResponse(res, {
+          statusCode: 200,
+          success: true,
+          message: 'Review extracted successfully (cache)',
+          data: JSON.parse(retry),
+        });
+    }
+
+    // Call OpenAI
+    const result = await ReviewServices.extractReview(text);
+
+    // Save cache
+    await redis.set(cacheKey, JSON.stringify(result), 'EX', 60 * 60 * 24 * 90);
+
+    // Release lock (optional, EX handles safety)
+    await redis.del(lockKey);
 
     sendResponse(res, {
       statusCode: 200,
