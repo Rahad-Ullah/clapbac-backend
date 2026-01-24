@@ -11,6 +11,44 @@ const extractReviewZodSchema = z.object({
     .strict(),
 });
 
+// generate clapbac review validation
+export const generateClapbacReviewZodSchema = z.object({
+  body: z
+    .object({
+      context: z
+        .string({ required_error: 'Review context is required' })
+        .nonempty({ message: 'Review context cannot be empty' }),
+
+      prompt: z
+        .string({ required_error: 'Prompt is required' })
+        .nonempty({ message: 'Prompt cannot be empty' }),
+
+      tone: z
+        .string({ required_error: 'Tone is required' })
+        .nonempty({ message: 'Tone cannot be empty' }),
+
+      lengthInWords: z
+        .number({ required_error: 'Length in words is required' })
+        .int({ message: 'Length in words must be an integer' })
+        .min(5, { message: 'Length must be at least 5 words' })
+        .max(300, { message: 'Length must not exceed 300 words' }),
+
+      useHashTags: z
+        .boolean({ required_error: 'useHashTags is required' })
+        .default(false),
+      useEmojis: z
+        .boolean({ required_error: 'useEmojis is required' })
+        .default(false),
+
+      resultCount: z
+        .number({ required_error: 'Result count is required' })
+        .int({ message: 'Result count must be an integer' })
+        .min(1, { message: 'Result count must be at least 1' })
+        .max(5, { message: 'Result count must not exceed 5' }),
+    })
+    .strict(),
+});
+
 // create review validation
 const createReviewZodSchema = z.object({
   body: z
@@ -122,4 +160,9 @@ const updateReviewZodSchema = z.object({
     .strict(),
 });
 
-export const ReviewValidations = { extractReviewZodSchema, createReviewZodSchema, updateReviewZodSchema };
+export const ReviewValidations = {
+  extractReviewZodSchema,
+  generateClapbacReviewZodSchema,
+  createReviewZodSchema,
+  updateReviewZodSchema,
+};

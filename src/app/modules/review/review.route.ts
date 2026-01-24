@@ -15,6 +15,14 @@ router.post(
   ReviewController.extractReviewByAi
 );
 
+// generate clapbac review by ai
+router.post(
+  '/generate',
+  auth(USER_ROLES.OWNER),
+  validateRequest(ReviewValidations.generateClapbacReviewZodSchema),
+  ReviewController.generateClapbacReviewByAi
+);
+
 // create review
 router.post(
   '/create',

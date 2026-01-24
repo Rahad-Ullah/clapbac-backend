@@ -4,57 +4,113 @@ import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { cachedReviewers } from '../../../DB/cache';
 import { redis } from '../announce/announce.controller';
-import { reviewCacheKey } from '../../../util/reviewCacheKey';
+import {
+  clapbacReviewGenerationCacheKey,
+  reviewExtractionCacheKey,
+} from '../../../util/reviewCacheKey';
 
 // extract review info by ai with redis caching
-const extractReviewByAi = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { text } = req.body;
+const extractReviewByAi = catchAsync(async (req: Request, res: Response) => {
+  const { text } = req.body;
 
-    const cacheKey = reviewCacheKey(text);
-    const lockKey = `${cacheKey}:lock`;
+  const cacheKey = reviewExtractionCacheKey(text);
+  const lockKey = `${cacheKey}:lock`;
 
-    // Check Redis cache
-    const cached = await redis.get(cacheKey);
-    if (cached)
+  // Check Redis cache
+  const cached = await redis.get(cacheKey);
+  if (cached)
+    return sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Review extracted successfully (cache)',
+      data: JSON.parse(cached),
+    });
+
+  // Try to lock
+  const locked = await redis.set(lockKey, '1', 'EX', 15, 'NX');
+  if (!locked) {
+    // Someone else is processing → wait & retry
+    await new Promise(r => setTimeout(r, 500));
+    const retry = await redis.get(cacheKey);
+    if (retry)
       return sendResponse(res, {
         statusCode: 200,
         success: true,
         message: 'Review extracted successfully (cache)',
+        data: JSON.parse(retry),
+      });
+  }
+
+  // Call OpenAI
+  const result = await ReviewServices.extractReview(text);
+
+  // Save cache
+  await redis.set(cacheKey, JSON.stringify(result), 'EX', 60 * 60 * 24 * 90);
+
+  // Release lock (optional, EX handles safety)
+  await redis.del(lockKey);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Review extracted successfully',
+    data: result,
+  });
+});
+
+// generate review reply by ai with redis caching
+const generateClapbacReviewByAi = catchAsync(
+  async (req: Request, res: Response) => {
+    const payload = req.body;
+
+    const cacheKey = clapbacReviewGenerationCacheKey(payload);
+    const lockKey = `${cacheKey}:lock`;
+
+    // 1. Check Redis cache
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      return sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Review reply generated successfully (cache)',
         data: JSON.parse(cached),
       });
+    }
 
-    // Try to lock
+    // 2. Acquire lock
     const locked = await redis.set(lockKey, '1', 'EX', 15, 'NX');
     if (!locked) {
-      // Someone else is processing → wait & retry
+      // Another request is processing → wait & retry
       await new Promise(r => setTimeout(r, 500));
+
       const retry = await redis.get(cacheKey);
-      if (retry)
+      if (retry) {
         return sendResponse(res, {
           statusCode: 200,
           success: true,
-          message: 'Review extracted successfully (cache)',
+          message: 'Review reply generated successfully (cache)',
           data: JSON.parse(retry),
         });
+      }
     }
 
-    // Call OpenAI
-    const result = await ReviewServices.extractReview(text);
+    // 3. Call OpenAI service
+    const result = await ReviewServices.generateClapbacReview(payload);
 
-    // Save cache
+    // 4. Cache result (90 days)
     await redis.set(cacheKey, JSON.stringify(result), 'EX', 60 * 60 * 24 * 90);
 
-    // Release lock (optional, EX handles safety)
+    // 5. Release lock (optional)
     await redis.del(lockKey);
 
+    // 6. Send response
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: 'Review extracted successfully',
+      message: 'Review reply generated successfully',
       data: result,
     });
-  }
+  },
 );
 
 // create review controller
@@ -69,7 +125,7 @@ const createReview = catchAsync(
       message: 'Review created successfully',
       data: result,
     });
-  }
+  },
 );
 
 // update review
@@ -152,5 +208,12 @@ const getAllReviewers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-export const ReviewController = { extractReviewByAi, createReview, updateReview, getReviewByCompanyId, getAllReviews, getAllReviewers };
+export const ReviewController = {
+  extractReviewByAi,
+  generateClapbacReviewByAi,
+  createReview,
+  updateReview,
+  getReviewByCompanyId,
+  getAllReviews,
+  getAllReviewers,
+};

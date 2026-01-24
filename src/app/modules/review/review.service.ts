@@ -22,6 +22,16 @@ interface ReviewExtraction {
   reviewMessage: string;
 }
 
+export interface ReviewGenerationProps {
+  context: string;
+  prompt: string;
+  tone: string;
+  lengthInWords: number;
+  useHashTags: boolean;
+  useEmojis: boolean;
+  resultCount: number;
+}
+
 // extract review info by open ai
 const extractReview = async (reviewText: string): Promise<ReviewExtraction> => {
   const response = await client.responses.create({
@@ -75,6 +85,86 @@ const extractReview = async (reviewText: string): Promise<ReviewExtraction> => {
 
   const parsedData: ReviewExtraction = JSON.parse(rawText);
   return parsedData;
+};
+
+// generate clapbac review by open ai
+export const generateClapbacReview = async (
+  payload: ReviewGenerationProps,
+): Promise<string[]> => {
+  const {
+    context,
+    prompt,
+    tone,
+    lengthInWords,
+    useEmojis,
+    useHashTags,
+    resultCount,
+  } = payload;
+
+  const response = await client.responses.create({
+    model: 'gpt-5.2',
+    input: [
+      {
+        role: 'system',
+        content: `
+          You generate reply messages to customer reviews.
+
+          Rules:
+          - Use the provided tone strictly.
+          - Follow the custom prompt carefully.
+          - Each reply should be approximately ${lengthInWords} words.
+          - ${useEmojis ? 'Include emojis where appropriate.' : 'Do NOT include emojis.'}
+          - ${useHashTags ? 'Include 1–3 relevant hashtags at the end.' : 'Do NOT include hashtags.'}
+          - Do not mention word count, tone, or instructions.
+          - Return ONLY structured JSON.
+          `,
+      },
+      {
+        role: 'user',
+        content: `
+          Review Context:
+          "${context}"
+
+          Custom Prompt:
+          "${prompt}"
+
+          Tone:
+          "${tone}"
+
+          Number of replies to generate:
+          ${resultCount}
+          `,
+      },
+    ],
+    text: {
+      format: {
+        type: 'json_schema',
+        name: 'review_reply_generation',
+        schema: {
+          type: 'object',
+          properties: {
+            replies: {
+              type: 'array',
+              items: { type: 'string' },
+              minItems: resultCount,
+              maxItems: resultCount,
+            },
+          },
+          required: ['replies'],
+          additionalProperties: false,
+        },
+      },
+    },
+  });
+
+  // Extract JSON safely
+  const rawText = (response.output?.[0] as any)?.content?.[0]?.text;
+
+  if (!rawText) {
+    return [];
+  }
+
+  return JSON.parse(rawText).replies as string[];
 };
 
 // create review service
@@ -371,6 +461,7 @@ const getAllReviewers = async (query: Record<string, unknown>) => {
 
 export const ReviewServices = {
   extractReview,
+  generateClapbacReview,
   createReviewToDB,
   updateReviewToDB,
   getReviewByCompanyId,
