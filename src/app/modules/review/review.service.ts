@@ -32,7 +32,7 @@ const extractReview = async (reviewText: string): Promise<ReviewExtraction> => {
         content: `
         Extract ONLY the following fields from the review text:
         reviewerName, reviewerAddress, experienceDate, reviewMessage
-        Return all fields as JSON. Use empty string "" if missing.
+        Return all fields as JSON. Ignore numbers between address and date. Remove the last sentence from reviewMessage. Use empty string "" if missing.
         `,
       },
       { role: 'user', content: reviewText },
@@ -123,7 +123,7 @@ const createReviewToDB = async (payload: IReview): Promise<IReview> => {
           reviewCount: reviewCount,
         },
       },
-      { new: true, session }
+      { new: true, session },
     );
 
     await session.commitTransaction();
@@ -139,7 +139,7 @@ const createReviewToDB = async (payload: IReview): Promise<IReview> => {
 // update review service
 const updateReviewToDB = async (
   id: string,
-  payload: Partial<IReview>
+  payload: Partial<IReview>,
 ): Promise<IReview | null> => {
   // check if review exists
   const existingReview = await Review.findById(id);
@@ -186,7 +186,7 @@ const updateReviewToDB = async (
           reviewCount: reviewCount,
         },
       },
-      { new: true, session }
+      { new: true, session },
     );
 
     await session.commitTransaction();
@@ -215,10 +215,10 @@ const getReviewByCompanyId = async (id: string) => {
     reviewsWithComments = await Promise.all(
       reviews.map(async (review: IReview & { comments?: IComment[] }) => {
         const comments = await CommentServices.getCommentsByReviewId(
-          review._id?.toString() as string
+          review._id?.toString() as string,
         );
         return { ...review, comments };
-      })
+      }),
     );
   }
 
@@ -242,7 +242,7 @@ const getAllReviews = async (query: Record<string, unknown>) => {
         },
       },
     ]),
-    query
+    query,
   )
     .search(['reviewerName'])
     .filter()
