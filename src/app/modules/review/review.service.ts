@@ -41,8 +41,10 @@ const extractReview = async (reviewText: string): Promise<ReviewExtraction> => {
         role: 'system',
         content: `
         Extract ONLY the following fields from the review text:
-        reviewerName, reviewerAddress, experienceDate, reviewMessage
-        Return all fields as JSON. Ignore numbers between address and date. Remove the last sentence from reviewMessage. Use empty string "" if missing.
+        reviewerName, reviewerAddress, experienceDate, reviewMessage.
+        Return all fields as JSON. Convert date to YYYY-MM-DD.
+        Ignore numbers between address and date. Remove the last sentence from reviewMessage.
+        Use empty string "" if missing.
         `,
       },
       { role: 'user', content: reviewText },
