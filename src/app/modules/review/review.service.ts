@@ -92,7 +92,7 @@ const extractReview = async (reviewText: string): Promise<ReviewExtraction> => {
 // generate clapbac review by open ai
 export const generateClapbacReview = async (
   payload: ReviewGenerationProps,
-): Promise<string[]> => {
+): Promise<{ title: string; message: string }[]> => {
   const {
     context,
     prompt,
@@ -110,10 +110,11 @@ export const generateClapbacReview = async (
         role: 'system',
         content: `
           You generate reply messages to customer reviews.
+          For each generation, provide a catchy, short title and the reply message.
 
           Rules:
           - Use the provided tone strictly.
-          - Follow the custom prompt carefully.
+          - Follow the custom prompt carefully. Write as a 3rd person and write about the reviewer, not the company.
           - Each reply should be approximately ${lengthInWords} words.
           - ${useEmojis ? 'Include emojis where appropriate.' : 'Do NOT include emojis.'}
           - ${useHashTags ? 'Include 1–3 relevant hashtags at the end.' : 'Do NOT include hashtags.'}
@@ -147,7 +148,15 @@ export const generateClapbacReview = async (
           properties: {
             replies: {
               type: 'array',
-              items: { type: 'string' },
+              items: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string' },
+                  message: { type: 'string' },
+                },
+                required: ['title', 'message'],
+                additionalProperties: false,
+              },
               minItems: resultCount,
               maxItems: resultCount,
             },
@@ -166,7 +175,7 @@ export const generateClapbacReview = async (
     return [];
   }
 
-  return JSON.parse(rawText).replies as string[];
+  return JSON.parse(rawText).replies as { title: string; message: string }[];
 };
 
 // create review service
