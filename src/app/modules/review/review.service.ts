@@ -301,9 +301,66 @@ const updateReviewToDB = async (
   }
 };
 
+// delete review service
+const deleteReviewFromDB = async (id: string): Promise<IReview | null> => {
+  // check if review exists
+  const existingReview = await Review.findById(id);
+  if (!existingReview) {
+    throw new Error('Review not found');
+  }
+
+  const session = await Review.startSession();
+  session.startTransaction();
+
+  try {
+    // delete review
+    const deletedReview = await Review.findByIdAndUpdate(id, { isDeleted: true }, { new: true, session });
+    if (!deletedReview) {
+      throw new Error('Failed to delete review');
+    }
+
+    // recalculate avgRating + reviewCount for this company
+    const stats = await Review.aggregate([
+      { $match: { company: deletedReview.company } },
+      {
+        $group: {
+          _id: null,
+          avgRating: { $avg: '$reviewRating' },
+          reviewCount: { $sum: 1 },
+        },
+      },
+    ]).session(session);
+
+    const averageRating = stats[0]?.avgRating
+      ? Number(stats[0].avgRating.toFixed(1))
+      : 0;
+    const reviewCount = stats[0]?.reviewCount || 0;
+
+    await Company.findByIdAndUpdate(
+      deletedReview.company,
+      {
+        $set: {
+          avgRating: averageRating,
+          reviewCount: reviewCount,
+        },
+      },
+      { new: true, session },
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return deletedReview;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};
+
 // get review by company id
 const getReviewByCompanyId = async (id: string) => {
-  const reviews = await Review.find({ company: id })
+  const reviews = await Review.find({ company: id, isDeleted: false })
     .populate('user', 'firstName lastName email title image')
     .populate('company', 'name')
     .sort({ createdAt: -1 })
@@ -475,6 +532,7 @@ export const ReviewServices = {
   generateClapbacReview,
   createReviewToDB,
   updateReviewToDB,
+  deleteReviewFromDB,
   getReviewByCompanyId,
   getAllReviews,
   getAllReviewers,

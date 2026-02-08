@@ -39,6 +39,13 @@ router.patch(
   ReviewController.updateReview
 );
 
+// delete review
+router.delete(
+  '/:id',
+  auth(USER_ROLES.OWNER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  ReviewController.deleteReview
+);
+
 // get all reviews
 router.get(
   '/',

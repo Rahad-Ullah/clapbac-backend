@@ -142,6 +142,19 @@ const updateReview = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// delete review
+const deleteReview = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await ReviewServices.deleteReviewFromDB(id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Review deleted successfully',
+    data: result,
+  });
+});
+
 // get review by company id
 const getReviewByCompanyId = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -213,6 +226,7 @@ export const ReviewController = {
   generateClapbacReviewByAi,
   createReview,
   updateReview,
+  deleteReview,
   getReviewByCompanyId,
   getAllReviews,
   getAllReviewers,
