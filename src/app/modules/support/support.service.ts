@@ -1,24 +1,31 @@
 import { emailHelper } from '../../../helpers/emailHelper';
 import { emailTemplate } from '../../../shared/emailTemplate';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { SupportStatus } from './support.constant';
 import { ISupport } from './support.interface';
 import { Support } from './support.model';
 
 // create support
 const createSupport = async (payload: ISupport): Promise<ISupport> => {
-  // check if the user already submitted a support request within last 24 hours
-  const isExistSupport = await Support.findOne({
+  // check if the user has already 3 pending request within last 6 hours
+  const requestCount = await Support.countDocuments({
     email: payload.email,
-    createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    status: SupportStatus.OPEN,
+    createdAt: { $gte: new Date(Date.now() - 6 * 60 * 60 * 1000) },
   });
-  if (isExistSupport) {
-    throw new Error('You already submitted a support request');
+  if (requestCount >= 3) {
+    throw new Error(
+      'We have received too many requests from you. Please try again later.',
+    );
   }
 
   const result = await Support.create(payload);
 
   // send email to admin about new support request
-  await emailHelper.sendEmail(emailTemplate.supportResponse(payload));
+  await emailHelper.sendEmail(emailTemplate.supportResponseToAdmin(payload));
+
+  // send confirmation email to user
+  await emailHelper.sendEmail(emailTemplate.supportConfirmationToUser(payload));
 
   return result;
 };
