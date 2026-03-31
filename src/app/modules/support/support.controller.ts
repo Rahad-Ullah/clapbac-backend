@@ -20,7 +20,7 @@ const createSupport = catchAsync(
 
 // update support
 const updateSupport = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const id = req.params.id;
+  const id = req.params.id as string;
   const payload = req.body;
   const result = await SupportServices.updateSupport(id, payload);
 

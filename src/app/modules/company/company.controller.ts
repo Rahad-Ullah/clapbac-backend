@@ -9,7 +9,7 @@ import { getSingleFilePath } from '../../../shared/getFilePath';
 const updateCompany = catchAsync(async (req: Request, res: Response) => {
   const logo = getSingleFilePath(req.files, 'image');
 
-  const result = await CompanyServices.updateCompany(req.params.id, {
+  const result = await CompanyServices.updateCompany(req.params.id as string, {
     ...req.body,
     logo,
   });
@@ -23,20 +23,24 @@ const updateCompany = catchAsync(async (req: Request, res: Response) => {
 });
 
 // toggle featured company
-const toggleFeaturedCompany = catchAsync(async (req: Request, res: Response) => {
-  const result = await CompanyServices.toggleFeaturedCompany(req.params.id);
+const toggleFeaturedCompany = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await CompanyServices.toggleFeaturedCompany(
+      req.params.id as string,
+    );
 
-  sendResponse(res, {
-    statusCode: StatusCodes.OK,
-    success: true,
-    message: 'Company updated successfully!',
-    data: result,
-  });
-});
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: 'Company updated successfully!',
+      data: result,
+    });
+  },
+);
 
 // get single by id
 const getSingleById = catchAsync(async (req: Request, res: Response) => {
-  const result = await CompanyServices.getSingleById(req.params.id);
+  const result = await CompanyServices.getSingleById(req.params.id as string);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
