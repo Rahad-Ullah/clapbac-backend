@@ -22,7 +22,7 @@ const createUpdateDisclaimer = catchAsync(
 const getDisclaimerByType = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const type = req.params.type;
-    const result = await DisclaimerServices.getAllDisclaimer(type);
+    const result = await DisclaimerServices.getAllDisclaimer(type as string);
 
     sendResponse(res, {
       statusCode: 200,

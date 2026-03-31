@@ -21,7 +21,7 @@ const createReport = catchAsync(async (req: Request, res: Response) => {
 const updateReport = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const payload = req.body;
-  const result = await ReportServices.updateReport(id, payload);
+  const result = await ReportServices.updateReport(id as string, payload);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

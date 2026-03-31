@@ -132,7 +132,7 @@ const createReview = catchAsync(
 const updateReview = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const payload = req.body;
-  const result = await ReviewServices.updateReviewToDB(id, payload);
+  const result = await ReviewServices.updateReviewToDB(id as string, payload);
 
   sendResponse(res, {
     statusCode: 200,
@@ -145,7 +145,7 @@ const updateReview = catchAsync(async (req: Request, res: Response) => {
 // delete review
 const deleteReview = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await ReviewServices.deleteReviewFromDB(id);
+  const result = await ReviewServices.deleteReviewFromDB(id as string);
 
   sendResponse(res, {
     statusCode: 200,
@@ -158,7 +158,7 @@ const deleteReview = catchAsync(async (req: Request, res: Response) => {
 // get review by company id
 const getReviewByCompanyId = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await ReviewServices.getReviewByCompanyId(id);
+  const result = await ReviewServices.getReviewByCompanyId(id as string);
 
   sendResponse(res, {
     statusCode: 200,

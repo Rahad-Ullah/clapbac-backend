@@ -22,7 +22,10 @@ const createComment = catchAsync(async (req: Request, res: Response) => {
 // update comment
 const updateComment = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await CommentServices.updateCommentIntoDB(id, req.body);
+  const result = await CommentServices.updateCommentIntoDB(
+    id as string,
+    req.body,
+  );
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -33,16 +36,18 @@ const updateComment = catchAsync(async (req: Request, res: Response) => {
 });
 
 // get comments by review id
-const getCommentsByReviewId = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = await CommentServices.getCommentsByReviewId(id);
+const getCommentsByReviewId = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await CommentServices.getCommentsByReviewId(id as string);
 
-  sendResponse(res, {
-    statusCode: StatusCodes.OK,
-    success: true,
-    message: 'Comments retrieved successfully',
-    data: result,
-  });
-});
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: 'Comments retrieved successfully',
+      data: result,
+    });
+  },
+);
 
 export const CommentController = { createComment, updateComment, getCommentsByReviewId };

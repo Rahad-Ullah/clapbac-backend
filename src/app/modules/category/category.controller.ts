@@ -29,7 +29,7 @@ const updateCategory = catchAsync(
     const { id } = req.params;
     const icon = getSingleFilePath(req.files, 'image');
 
-    const result = await CategoryServices.updateCategoryToDB(id, {
+    const result = await CategoryServices.updateCategoryToDB(id as string, {
       ...req.body,
       icon,
     });
@@ -40,14 +40,14 @@ const updateCategory = catchAsync(
       message: 'Category updated successfully',
       data: result,
     });
-  }
+  },
 );
 
 // get single category controller
 const getSingleCategory = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-    const result = await CategoryServices.getSingleCategoryById(id);
+    const result = await CategoryServices.getSingleCategoryById(id as string);
 
     sendResponse(res, {
       statusCode: 200,
@@ -55,7 +55,7 @@ const getSingleCategory = catchAsync(
       message: 'Category retrieved successfully',
       data: result,
     });
-  }
+  },
 );
 
 // get all categories controller

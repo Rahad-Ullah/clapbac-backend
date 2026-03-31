@@ -11,7 +11,7 @@ export const redis = new Redis(); // defaults to localhost:6379
 const createAnnounce = catchAsync(async (req: Request, res: Response) => {
   const result = await AnnounceServices.createAnnounceToDB({
     ...req.body,
-    createdBy: req.user.id,
+    createdBy: req.user.id as string,
   });
 
   sendResponse(res, {
@@ -25,7 +25,7 @@ const createAnnounce = catchAsync(async (req: Request, res: Response) => {
 // update announce controller
 const updateAnnounce = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await AnnounceServices.updateAnnounce(id, req.body);
+  const result = await AnnounceServices.updateAnnounce(id as string, req.body);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -38,7 +38,7 @@ const updateAnnounce = catchAsync(async (req: Request, res: Response) => {
 // delete announce controller
 const archiveAnnounce = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await AnnounceServices.archiveAnnounce(id);
+  const result = await AnnounceServices.archiveAnnounce(id as string);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

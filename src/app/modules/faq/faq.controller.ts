@@ -24,7 +24,7 @@ const updateFaq = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const { ...payload } = req.body;
-    const result = await FaqServices.updateFaqToDB(id, payload);
+    const result = await FaqServices.updateFaqToDB(id as string, payload);
 
     sendResponse(res, {
       statusCode: StatusCodes.OK,
@@ -32,14 +32,14 @@ const updateFaq = catchAsync(
       message: 'Faq updated successfully',
       data: result,
     });
-  }
+  },
 );
 
 // delete faq controller
 const deleteFaq = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-    const result = await FaqServices.deleteFaqFromDB(id);
+    const result = await FaqServices.deleteFaqFromDB(id as string);
 
     sendResponse(res, {
       statusCode: StatusCodes.OK,
@@ -47,7 +47,7 @@ const deleteFaq = catchAsync(
       message: 'Faq deleted successfully',
       data: result,
     });
-  }
+  },
 );
 
 // get all faqs controller

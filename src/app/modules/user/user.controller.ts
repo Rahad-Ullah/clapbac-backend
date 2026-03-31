@@ -42,7 +42,7 @@ const updateUserById = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const payload = req.body;
-    const result = await UserService.updateUserByIdToDB(id, payload);
+    const result = await UserService.updateUserByIdToDB(id as string, payload);
 
     sendResponse(res, {
       success: true,
@@ -50,7 +50,7 @@ const updateUserById = catchAsync(
       message: 'User updated successfully',
       data: result,
     });
-  }
+  },
 );
 
 //update profile
@@ -71,13 +71,13 @@ const updateProfile = catchAsync(
       message: 'Profile updated successfully',
       data: result,
     });
-  }
+  },
 );
 
 // delete user by id
 const deleteUserById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await UserService.deleteUserByIdFromDB(id);
+  const result = await UserService.deleteUserByIdFromDB(id as string);
 
   sendResponse(res, {
     success: true,
@@ -103,7 +103,7 @@ const getUserProfile = catchAsync(async (req: Request, res: Response) => {
 // get single user by id
 const getUserById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await UserService.getUserByIdFromDB(id);
+  const result = await UserService.getUserByIdFromDB(id as string);
 
   sendResponse(res, {
     success: true,
