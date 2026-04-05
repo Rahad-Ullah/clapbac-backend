@@ -12,7 +12,7 @@ const fileUploadHandler = () => {
   const storage = multerS3({
     s3: s3Client,
     bucket: config.aws.bucketName!,
-    acl: 'public-read',
+    // acl: 'public-read',
     metadata: (req, file, cb) => {
       cb(null, { fieldName: file.fieldname });
     },
