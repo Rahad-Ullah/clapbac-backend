@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import openAiClient from '../../../config/open-ai';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { IComment } from '../comment/comment.interface';
 import { CommentServices } from '../comment/comment.service';
@@ -9,11 +9,6 @@ import {
 } from './review.constant';
 import { IReview } from './review.interface';
 import { Review } from './review.model';
-import config from '../../../config';
-
-const client = new OpenAI({
-  apiKey: config.openai.api_key,
-});
 
 interface ReviewExtraction {
   reviewerName: string;
@@ -34,7 +29,7 @@ export interface ReviewGenerationProps {
 
 // extract review info by open ai
 const extractReview = async (reviewText: string): Promise<ReviewExtraction> => {
-  const response = await client.responses.create({
+  const response = await openAiClient.responses.create({
     model: 'gpt-5.2',
     input: [
       {
@@ -103,7 +98,7 @@ export const generateClapbacReview = async (
     resultCount,
   } = payload;
 
-  const response = await client.responses.create({
+  const response = await openAiClient.responses.create({
     model: 'gpt-5.2',
     input: [
       {
@@ -314,7 +309,11 @@ const deleteReviewFromDB = async (id: string): Promise<IReview | null> => {
 
   try {
     // delete review
-    const deletedReview = await Review.findByIdAndUpdate(id, { isDeleted: true }, { new: true, session });
+    const deletedReview = await Review.findByIdAndUpdate(
+      id,
+      { isDeleted: true },
+      { new: true, session },
+    );
     if (!deletedReview) {
       throw new Error('Failed to delete review');
     }

@@ -1,45 +1,22 @@
 import { Request } from 'express';
-import fs from 'fs';
 import { StatusCodes } from 'http-status-codes';
 import multer, { FileFilterCallback } from 'multer';
+import multerS3 from 'multer-s3';
 import path from 'path';
 import ApiError from '../../errors/ApiError';
+import s3Client from '../../config/aws-s3';
+import config from '../../config';
 
 const fileUploadHandler = () => {
-  //create upload folder
-  const baseUploadDir = path.join(process.cwd(), 'uploads');
-  if (!fs.existsSync(baseUploadDir)) {
-    fs.mkdirSync(baseUploadDir);
-  }
-
-  //folder create for different file
-  const createDir = (dirPath: string) => {
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath);
-    }
-  };
-
-  //create filename
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      let uploadDir;
-      switch (file.fieldname) {
-        case 'image':
-          uploadDir = path.join(baseUploadDir, 'image');
-          break;
-        case 'media':
-          uploadDir = path.join(baseUploadDir, 'media');
-          break;
-        case 'doc':
-          uploadDir = path.join(baseUploadDir, 'doc');
-          break;
-        default:
-          throw new ApiError(StatusCodes.BAD_REQUEST, 'File is not supported');
-      }
-      createDir(uploadDir);
-      cb(null, uploadDir);
+  //create storage
+  const storage = multerS3({
+    s3: s3Client,
+    bucket: config.aws.bucketName!,
+    acl: 'public-read',
+    metadata: (req, file, cb) => {
+      cb(null, { fieldName: file.fieldname });
     },
-    filename: (req, file, cb) => {
+    key: (req, file, cb) => {
       const fileExt = path.extname(file.originalname);
       const fileName =
         file.originalname
@@ -49,7 +26,25 @@ const fileUploadHandler = () => {
           .join('-') +
         '-' +
         Date.now();
-      cb(null, fileName + fileExt);
+
+      let folder = '';
+      switch (file.fieldname) {
+        case 'image':
+          folder = 'image/';
+          break;
+        case 'media':
+          folder = 'media/';
+          break;
+        case 'doc':
+          folder = 'doc/';
+          break;
+        default:
+          return cb(
+            new ApiError(StatusCodes.BAD_REQUEST, 'File not supported'),
+          );
+      }
+
+      cb(null, folder + fileName + fileExt); // e.g., "image/my-photo-12345.jpg"
     },
   });
 
@@ -57,7 +52,7 @@ const fileUploadHandler = () => {
   const fileFilter = (
     req: Request,
     file: Express.Multer.File,
-    cb: FileFilterCallback
+    cb: FileFilterCallback,
   ) => {
     if (file.fieldname === 'image') {
       if (
@@ -70,8 +65,8 @@ const fileUploadHandler = () => {
         cb(
           new ApiError(
             StatusCodes.BAD_REQUEST,
-            'Only .jpeg, .png, .jpg file supported'
-          )
+            'Only .jpeg, .png, .jpg file supported',
+          ),
         );
       }
     } else if (file.fieldname === 'media') {
@@ -81,8 +76,8 @@ const fileUploadHandler = () => {
         cb(
           new ApiError(
             StatusCodes.BAD_REQUEST,
-            'Only .mp4, .mp3, file supported'
-          )
+            'Only .mp4, .mp3, file supported',
+          ),
         );
       }
     } else if (file.fieldname === 'doc') {
