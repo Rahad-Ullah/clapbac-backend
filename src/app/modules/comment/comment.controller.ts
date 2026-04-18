@@ -50,4 +50,23 @@ const getCommentsByReviewId = catchAsync(
   },
 );
 
-export const CommentController = { createComment, updateComment, getCommentsByReviewId };
+// get comments by user id
+const getCommentsByUserId = catchAsync(async (req: Request, res: Response) => {
+  const result = await CommentServices.getCommentsByUserId(
+    req.params.id as string,
+  );
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Comments retrieved successfully',
+    data: result,
+  });
+});
+
+export const CommentController = {
+  createComment,
+  updateComment,
+  getCommentsByReviewId,
+  getCommentsByUserId,
+};

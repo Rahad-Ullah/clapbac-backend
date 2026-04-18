@@ -29,4 +29,11 @@ router.get(
   CommentController.getCommentsByReviewId
 );
 
+// get comments by user id
+router.get(
+  '/user/:id',
+  auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  CommentController.getCommentsByUserId
+);
+
 export const CommentRoutes = router;

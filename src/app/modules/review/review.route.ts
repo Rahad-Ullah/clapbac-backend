@@ -34,9 +34,9 @@ router.post(
 // update review
 router.patch(
   '/:id',
-  auth(USER_ROLES.OWNER),
+  auth(),
   validateRequest(ReviewValidations.updateReviewZodSchema),
-  ReviewController.updateReview
+  ReviewController.updateReview,
 );
 
 // delete review

@@ -29,7 +29,7 @@ const createCommentIntoDB = async (payload: IComment): Promise<IComment> => {
       await Comment.findByIdAndUpdate(
         payload.parent,
         { $addToSet: { replies: comment[0]._id } },
-        { session }
+        { session },
       );
     }
 
@@ -77,4 +77,24 @@ const getCommentsByReviewId = async (id: string) => {
   return result;
 };
 
-export const CommentServices = { createCommentIntoDB, updateCommentIntoDB, getCommentsByReviewId };
+// ----------- get comments by user id -----------
+const getCommentsByUserId = async (id: string) => {
+  const result = await Comment.find({ user: id, isDeleted: false })
+    .populate('review')
+    .populate({
+      path: 'replies',
+      select: 'user parent message replies',
+      populate: {
+        path: 'user',
+        select: 'firstName lastName username email title image',
+      },
+    });
+  return result;
+};
+
+export const CommentServices = {
+  createCommentIntoDB,
+  updateCommentIntoDB,
+  getCommentsByReviewId,
+  getCommentsByUserId,
+};
