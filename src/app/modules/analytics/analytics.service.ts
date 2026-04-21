@@ -1,23 +1,23 @@
+import { Company } from '../company/company.model';
 import { ReportReason, ReportStatus } from '../report/report.constants';
 import { Report } from '../report/report.model';
 import { Review } from '../review/review.model';
-import { ReviewServices } from '../review/review.service';
 import { USER_ROLES } from '../user/user.constant';
 import { User } from '../user/user.model';
 
 // ----------- get dashboard overview -----------
 const getDashboardOverview = async () => {
-  // get total users, total reviewers, total reviews, new users of the last 30 days, weekly reviews
+  // get total users, total companies, total reviews, new users of the last 30 days, weekly reviews
   const [
     totalUsers,
-    reviewerRes,
+    totalCompanies,
     totalReviews,
     newUsers,
     weeklyReviews,
     ratingDistribution,
   ] = await Promise.all([
     User.countDocuments({ role: { $ne: USER_ROLES.SUPER_ADMIN } }).lean(),
-    ReviewServices.getAllReviewers({}),
+    Company.countDocuments({}).lean(),
     Review.countDocuments({}).lean(),
     User.countDocuments({
       role: { $ne: USER_ROLES.SUPER_ADMIN },
@@ -29,7 +29,7 @@ const getDashboardOverview = async () => {
 
   return {
     totalUsers,
-    totalReviewers: reviewerRes?.pagination?.total,
+    totalCompanies,
     totalReviews,
     newUsers,
     weeklyReviews,
@@ -189,7 +189,7 @@ const getReportOverview = async () => {
       ?.count || 0;
   const totalHarassment =
     reasons.find(
-      (r: { _id: ReportReason }) => r._id === ReportReason.HARASSMENT
+      (r: { _id: ReportReason }) => r._id === ReportReason.HARASSMENT,
     )?.count || 0;
   const totalFakeReview =
     reasons.find((r: { _id: ReportReason }) => r._id === ReportReason.FAKE)
