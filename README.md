@@ -44,14 +44,7 @@ Ensure you have the following installed:
 
 ### Installation
 
-1. **Clone the repository:**
-
-   ```bash
-   git clone https://github.com/Rahad-Ullah/backend-template-typescript-mongoose-express.git
-   cd backend-template-typescript-mongoose-express
-   ```
-
-2. **Install dependencies:**
+1. **Install dependencies:**
 
    Using npm:
 
@@ -65,7 +58,7 @@ Ensure you have the following installed:
    yarn
    ```
 
-3. **Create a `.env` file:**
+2. **Create a `.env` file:**
 
    In the root directory of the project, create a `.env` file and add the following variables. Adjust the values according to your setup.
 
@@ -97,7 +90,7 @@ Ensure you have the following installed:
    SUPER_ADMIN_PASSWORD=P@ssword123
    ```
 
-4. **Run the project:**
+3. **Run the project:**
 
    Using npm:
 
@@ -111,10 +104,15 @@ Ensure you have the following installed:
    yarn dev
    ```
 
-### Running the Tests
+## 👨‍💻 Developer
 
-Explain how to run the automated tests for this system.
+Built with ❤️ by [**Rahad Ullah**](mailto:rahadullah10@gmail.com)
 
-```bash
-npm test
-```
+> "Turning complex problems into elegant, efficient code."
+
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Rahad-Ullah)
+[![Portfolio](https://img.shields.io/badge/Portfolio-FF5722?style=for-the-badge&logo=react&logoColor=white)](https://rahadullah.vercel.app)
+
+---
+
+### Happy Coding 🚀
