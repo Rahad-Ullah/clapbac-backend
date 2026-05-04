@@ -369,6 +369,38 @@ const getSingleReviewById = async (id: string) => {
   return result;
 }
 
+// get reviews by user id
+const getReviewsByUserId = async (userId: string, query: Record<string, unknown>) => {
+  const reviewQuery = new QueryBuilder(
+    Review.find({ isDeleted: false, user: userId }).populate([
+      {
+        path: 'user',
+        select: 'firstName lastName username email title image',
+      },
+      {
+        path: 'company',
+        select: 'name category logo address',
+        populate: {
+          path: 'category',
+          select: 'name',
+        },
+      },
+    ]),
+    query,
+  )
+    .search(['reviewerName'])
+    .filter()
+    .paginate()
+    .sort();
+
+  const [data, pagination] = await Promise.all([
+    reviewQuery.modelQuery.lean(),
+    reviewQuery.getPaginationInfo(),
+  ]);
+
+  return { data, pagination };
+};
+
 // get review by company id
 const getReviewByCompanyId = async (id: string) => {
   const reviews = await Review.find({ company: id, isDeleted: false })
@@ -545,6 +577,7 @@ export const ReviewServices = {
   updateReviewToDB,
   deleteReviewFromDB,
   getSingleReviewById,
+  getReviewsByUserId,
   getReviewByCompanyId,
   getAllReviews,
   getAllReviewers,

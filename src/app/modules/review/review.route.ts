@@ -53,6 +53,13 @@ router.get(
   ReviewController.getSingleReviewById
 );
 
+// get my reviews
+router.get(
+  '/my-reviews',
+  auth(),
+  ReviewController.getMyReviews
+);
+
 // get all reviews
 router.get(
   '/',

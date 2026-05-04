@@ -168,6 +168,19 @@ const getSingleReviewById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get my reviews
+const getMyReviews = catchAsync(async (req: Request, res: Response) => {
+  const result = await ReviewServices.getReviewsByUserId(req.user.id, req.query);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'My reviews retrieved successfully',
+    data: result.data,
+    pagination: result.pagination,
+  });
+});
+
 // get review by company id
 const getReviewByCompanyId = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -241,6 +254,7 @@ export const ReviewController = {
   updateReview,
   deleteReview,
   getSingleReviewById,
+  getMyReviews,
   getReviewByCompanyId,
   getAllReviews,
   getAllReviewers,
