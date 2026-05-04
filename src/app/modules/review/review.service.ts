@@ -357,6 +357,18 @@ const deleteReviewFromDB = async (id: string): Promise<IReview | null> => {
   }
 };
 
+// get single review by id
+const getSingleReviewById = async (id: string) => {
+  const result = await Review.findById(id)
+    .populate('user', 'firstName lastName email title image')
+    .populate('company', 'name');
+
+  if (!result) {
+    throw new Error('Review not found');
+  }
+  return result;
+}
+
 // get review by company id
 const getReviewByCompanyId = async (id: string) => {
   const reviews = await Review.find({ company: id, isDeleted: false })
@@ -532,6 +544,7 @@ export const ReviewServices = {
   createReviewToDB,
   updateReviewToDB,
   deleteReviewFromDB,
+  getSingleReviewById,
   getReviewByCompanyId,
   getAllReviews,
   getAllReviewers,

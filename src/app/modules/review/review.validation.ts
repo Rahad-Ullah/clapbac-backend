@@ -160,9 +160,19 @@ const updateReviewZodSchema = z.object({
     .strict(),
 });
 
+// get single review validation
+const getSingleReviewZodSchema = z.object({
+  params: z.object({
+    id: z.string({ required_error: 'Review id is required' }).length(24, {
+      message: 'Invalid review id',
+    }),
+  }),
+});
+
 export const ReviewValidations = {
   extractReviewZodSchema,
   generateClapbacReviewZodSchema,
   createReviewZodSchema,
   updateReviewZodSchema,
+  getSingleReviewZodSchema,
 };

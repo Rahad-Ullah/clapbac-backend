@@ -155,6 +155,19 @@ const deleteReview = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get single by id
+const getSingleReviewById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await ReviewServices.getSingleReviewById(id as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Review retrieved successfully',
+    data: result,
+  });
+});
+
 // get review by company id
 const getReviewByCompanyId = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -227,6 +240,7 @@ export const ReviewController = {
   createReview,
   updateReview,
   deleteReview,
+  getSingleReviewById,
   getReviewByCompanyId,
   getAllReviews,
   getAllReviewers,

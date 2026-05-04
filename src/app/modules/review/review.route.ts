@@ -46,6 +46,13 @@ router.delete(
   ReviewController.deleteReview
 );
 
+// get single review by id
+router.get(
+  '/single/:id',
+  validateRequest(ReviewValidations.getSingleReviewZodSchema),
+  ReviewController.getSingleReviewById
+);
+
 // get all reviews
 router.get(
   '/',
