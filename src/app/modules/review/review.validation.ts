@@ -57,7 +57,8 @@ const createReviewZodSchema = z.object({
         .string({ required_error: 'Reviewer name is required' })
         .nonempty({ message: 'Reviewer name cannot be empty' }),
       reviewerAddress: z
-        .string({ required_error: 'Reviewer address is required' }),
+        .string({ required_error: 'Reviewer address is required' })
+        .optional(),
       reviewRating: z
         .number({ required_error: 'Review rating is required' })
         .min(0.5, { message: 'Review rating must be at least 0.5' })
@@ -72,7 +73,8 @@ const createReviewZodSchema = z.object({
         .string({ required_error: 'Source link is required' })
         .url({ message: 'Source link must be a valid URL' }),
       experienceDate: z
-        .string({ required_error: 'Experience date is required' }),
+        .string({ required_error: 'Experience date is required' })
+        .optional(),
       clapbacTitle: z
         .string({ required_error: 'Clapbac title is required' })
         .nonempty({ message: 'Clapbac title cannot be empty' }),
