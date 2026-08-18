@@ -11,7 +11,7 @@ const reviewSchema = new Schema<IReview, ReviewModel>(
     reviewMessage: { type: String, required: true },
     reviewSource: { type: String, required: true },
     sourceLink: { type: String, required: true },
-    experienceDate: { type: Date, default: null },
+    experienceDate: { type: Date, default: new Date() },
     clapbacTitle: { type: String, required: true },
     clapbacMessage: { type: String, required: true },
     clapbacRating: { type: Number, required: true, min: 0, max: 5 },
